@@ -77,7 +77,7 @@
     
     <!--- Seo Part-->
     
-    <link rel="canonical" href="https://mustafaalzaareer.github.io/404.html"/>
+    <link rel="canonical" href="https://mustafaalzaareer.github.io/2026/01/26/0xl4ugh-ctf-v5-forensics-writeup/"/>
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
@@ -85,12 +85,16 @@
     
     
         
-        <meta property="og:type" content="website">
-<meta property="og:title" content="Page Not Found">
-<meta property="og:url" content="https://mustafaalzaareer.github.io/404.html">
+        <meta name="description" content="Introductionin this CTF I played with my team PwnSec and after 48 Hours of competition, we secured second place. and I managed to solve 3&#x2F;4 of the DFIR challenges with me temmates so lets start w">
+<meta property="og:type" content="article">
+<meta property="og:title" content="0xL4ugh CTF V5 Forensics Writeup">
+<meta property="og:url" content="https://mustafaalzaareer.github.io/2026/01/26/0xL4ugh-CTF-V5-Forensics-Writeup/index.html">
 <meta property="og:site_name" content="Mustafa Alzaareer&#39;s Blog">
+<meta property="og:description" content="Introductionin this CTF I played with my team PwnSec and after 48 Hours of competition, we secured second place. and I managed to solve 3&#x2F;4 of the DFIR challenges with me temmates so lets start w">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
+<meta property="article:published_time" content="2026-01-26T10:39:35.000Z">
+<meta property="article:modified_time" content="2026-01-26T17:22:34.089Z">
 <meta property="article:author" content="Mustafa Alzaareer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
@@ -105,7 +109,7 @@
     
     <title>
         
-            Page Not Found | Mustafa Al-zaareer&#39;s Blog
+            0xL4ugh CTF V5 Forensics Writeup | Mustafa Al-zaareer&#39;s Blog
         
     </title>
 
@@ -420,15 +424,407 @@
 			
 
 			<div class="main-content">
-				<div class="nf-container">
-    <div class="nf-text">
-        <h1>404<br>Page Not Found</h1>
-    </div>
-    <div class="nf-button">
-        <a href="/" class="button large center"><i class="fa-regular fa-house"></i> Go Back Home</a>
-    </div>
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">0xL4ugh CTF V5 Forensics Writeup</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+				<img src="/images/hacker.svg">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">Mustafa Al-Zaareer</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv1</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2026-01-26 13:39:35</span>
+        <span class="mobile">2026-01-26 13:39:35</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-01-26 20:22:34</span>
+            <span class="mobile">2026-01-26 20:22:34</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Writeups/">Writeups</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Writeups/Forensics/">Forensics</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
 </div>
 
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>in this CTF I played with my team PwnSec and after 48 Hours of competition, we secured second place.<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/score.png"
+                      title="scoreboard"
+                ></p>
+<p>and I managed to solve 3&#x2F;4 of the DFIR challenges with me temmates so lets start with the writeup.</p>
+<h1 id="Zero-Hour-Medium"><a href="#Zero-Hour-Medium" class="headerlink" title="Zero Hour [Medium]"></a>Zero Hour [Medium]</h1><h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>Our intelligence unit has successfully identified a long-time cybercriminal. According to information provided by our confidential informant, he is preparing something major, and time is critical.<br>Your mission is to investigate the suspect’s laptop and uncover the following information:<br>What is the name of the victim?<br>What is the encryption key?<br>Flag: 0xL4ugh{name;key}</p>
+<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><p>We have a disk image of the suspect’s laptop and we want to analyze it, first thing I decided to see the downloads folder to see what is the suspect downloaded, and we got some important things:<br>he donwloaded discord, outlook and telegram, all these applictions are used for commincations so I thought that we need to analyze them, so I started by analyzing the discord cache and it was empty with nothing intersting, then I moved to outlook artifacts and also nothing intersting so the last option is telegram but there is no artifacts related to it immeditly so after some search in the artifacts I found the first answer in the notifications database.<br><code>C:\Users\tarok\AppData\Local\Microsoft\Windows\Notifications\wpndatabase.db</code></p>
+<p>open this database using DB browser and select the Notifications table you can see a notification from telegram and the text is <code>next target is Purdue Pete</code><br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/notification.png"
+                      alt="notifications"
+                ><br>now we have the first part lets move to the second one.<br>while analyzing the disk image I saw that the attacker downloaded WSL from the PowerShell History.<br><code>C:\Users\tarok\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt</code></p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wsl --install</span><br><span class="line">wsl --install -d kali-linux</span><br></pre></td></tr></table></figure></div>
+
+<p>so I decided to analyze the artifacts of wsl, we can find the WSL drive in<br><code>C:\Users\tarok\AppData\Local\wsl\&#123;e49649b6-5696-4474-a155-3ed599c71619&#125;</code> </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/wsldriver.png"
+                      title="wsl driver"
+                > </p>
+<p>now we need to export the drive and try to analyze it.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/setup.png"
+                     
+                ><br>now in the home directory we can find file <code>setup.exe</code> upload it to virus total and we can confirm that this file is ransomware, here we can find the encryption key but we need to analyze the malware.</p>
+<p>note: in this point I gived the malware to my temmate m7md and he analyzed it and gived me the key.<br><code>encryption key: CC2E406C5A9CF1202256672389781D0EBECBF73BBC091B035F88A41B90B7B07F</code></p>
+<p>Flag: <code>0xL4ugh&#123;Purdue Pete;CC2E406C5A9CF1202256672389781D0EBECBF73BBC091B035F88A41B90B7B07F&#125;</code></p>
+<h1 id="The-Hood-Hard"><a href="#The-Hood-Hard" class="headerlink" title="The Hood [Hard]"></a>The Hood [Hard]</h1><h2 id="Description-1"><a href="#Description-1" class="headerlink" title="Description"></a>Description</h2><p>Teddy MacDonald, a senior CIA operative, is under investigation after classified files leaked from his personal computer. A security camera captured an unidentified individual breaking into Teddy’s residence and tampering with his workstation.<br>Your mission is to analyze the evidence and uncover the truth—was this a targeted intrusion, or is there more to the story? Using your investigative skills, help the team piece together the events.</p>
+<h2 id="Solution-1"><a href="#Solution-1" class="headerlink" title="Solution"></a>Solution</h2><p>in this challenge the attacker access the computer physically. </p>
+<blockquote>
+<p>(1&#x2F;17) The intruder connected a device to Teddy’s machine during the breach. Can you uncover its serial number? </p>
+</blockquote>
+<p>ok after the attacker accessed the machine he connected a device(USB) to it and now we need to collect some informations about this device.<br>first thing is the serial number, we will use the regsitry hive <code>SYTEM</code> for this mission<br><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\USBSTOR</code> </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/usbstore.png"
+                     
+                ></p>
+<p>here we can se the serial number <code>UM2I126E</code> </p>
+<blockquote>
+<p>(2&#x2F;17) What is the manufacturer of this device? [company name] </p>
+</blockquote>
+<p>from the device name we can see the company name (just do some search about it)<br>answer <code>Transcend</code> </p>
+<blockquote>
+<p>(3&#x2F;17) What is the friendly name that, the intruder assigned to this device?</p>
+</blockquote>
+<p>here we will move to the second hive <code>SOFTWARE</code><br>and in the key <code>windows protable devices</code> or <code>MountedDevices</code> we can see the friendly name</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/device.png"
+                     
+                ></p>
+<p>answer: <code>OMKALALA</code></p>
+<blockquote>
+<p>(4&#x2F;17) After the guy walked in, we need to know how much time he used Teddy’s machine for?</p>
+</blockquote>
+<p>here we need to compine the investigation from multiple artifacts to find the answer, the attacker first connect the device to the machine in <code>2024-12-10 22:00:21</code> so he logon to the machine shortly before that, so we need to find the logon time of this LogonID, lets move to the security logs.<br>first logon to user a1l4m before this was in <code>2024-12-10 21:59:52</code> and the Logoff was in <code>12-10 22:05:45</code>.</p>
+<p>Logon:<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/logon.png"
+                     
+                > </p>
+<p>Logoff:<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/logoff.png"
+                     
+                > </p>
+<p>answer: <code>2024-12-10 21:59:52_2024-12-10 22:05:45</code> </p>
+<blockquote>
+<p>(5&#x2F;17) During their brief stay, the attacker appeared to be scouting the system. Which application did they use for reconnaissance?</p>
+</blockquote>
+<p>now we need to the applications that the attacker run it after he access the machine, so lets use prefetch files </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/prefetch.png"
+                     
+                ><br>the first useful app that run after the logon was <code>taskmgr.exe</code></p>
+<blockquote>
+<p>(6&#x2F;17) In the reconnaissance stage the attacker found a vulnerable service on the machine. What is the CVE number assigned to this vulnerability?</p>
+</blockquote>
+<p>the attacker was use the task manager to enemurate the services installed in the system to find any vulnarable service.<br>This Question take some time from me but i got it in my method, after parse the $MFT and search for the created files after the logon I found one dll created after the logon.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/mft.png"
+                     
+                > </p>
+<p>Fortunately we have the dll so we can get the hash and upload it to virustotal</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/virustotal1.png"
+                     
+                > </p>
+<p>ok we find the malware, lets find the cve that related to this dll and XPS Card Printer, just the first result in google was the cve. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/google.png"
+                     
+                > </p>
+<p>answer: <code>CVE-2024-34329</code></p>
+<p>the cve uses sideloading technique(replace the legitimate dll with a malicious dll in the same path, when the executable run it will load the dll and the maliciouse code will run)</p>
+<blockquote>
+<p>(7&#x2F;17) What is the SHA1 hash of the file that he used to exploit the service?<br>it is just the hash of the dll </p>
+</blockquote>
+<p>answer: <code>7ba477a58eb546b6d3cac3a86633b531ba82fa50</code></p>
+<blockquote>
+<p>(8&#x2F;17) What MITRE technique is used by the attacker here? </p>
+</blockquote>
+<p>Dll Side loading -&gt; <code>T1574.002</code></p>
+<blockquote>
+<p>(9&#x2F;17) To cover their tracks, the attacker executed multiple commands to disable system logging. What is the name of the file that has these commands? </p>
+</blockquote>
+<p>The first thing that came to my mind at that moment was that the commands should be in a PowerShell script, so I went to the powershell logs. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/powershell.png"
+                     
+                ></p>
+<p>so we was in the right place. </p>
+<p>answer: <code>svc1D3C.ps1</code></p>
+<blockquote>
+<p>(10&#x2F;17) To establish persistence, The intruder downloaded additional payloads. What is the IP and Port of the storage C2 server? Format IP:Port</p>
+</blockquote>
+<p>here we need to reverse the dll becouse we dont have logs to store the network connections, i am not good at reverse but this part was easy and I got it by my self.</p>
+<p>answer: <code>3.75.217.26:8080</code></p>
+<blockquote>
+<p>(11&#x2F;17) The attacker established a shell connection to a remote server. Your job: pinpoint the exact time the connection started. Format YYYY-MM-DD HH:MM:SS</p>
+</blockquote>
+<p>ok let’s go back to the prefetch files and we need to find when the cmd.exe started. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/cmd.png"
+                     
+                ></p>
+<p>here we can find the first time when the cmd.exe run after the attacker logon to the machine. </p>
+<p>answer: <code>2024-12-11 04:01:41</code></p>
+<blockquote>
+<p>(12&#x2F;17) Which IP address and port were used by the attacker to establish the shell and communicate with the C2 server? Foramt IP:port</p>
+</blockquote>
+<p>This is the most difficult part of the entire CTF (anyone who has participated in this CTF knows what I mean).</p>
+<p>here we need to get the shellcode that the dll dropped, again back to me rev teammate, after the team managed to get the shellcode from the dll I just used <code>speakeasy</code> to run the shellcode and it works</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/speak.png"
+                     
+                ></p>
+<blockquote>
+<p>(13&#x2F;17) To ensure control over the system, The attacker runs some commands on the machine. What command did he use to enumerate the machine and ensure access?</p>
+</blockquote>
+<p>back to our friend <code>prefetch files</code> we can see <code>whoami.exe</code> executed after the <code>cmd.exe</code> </p>
+<p>answer: <code>whoami</code></p>
+<blockquote>
+<p>(14&#x2F;17) Before leaving, the attacker downloaded additional files for exfiltration. Can you uncover the SHA256 hash of the downloaded file? Hint: it’s a zip file </p>
+</blockquote>
+<p>I love prefetch files because tell every thing, after the command whoami we can see that certutil.exe executed so I went to certutil cach and i found a zip file downloaded from the same IP of the C2</p>
+<p><code>http://3.75.217.26/tools.7z</code></p>
+<p>this was in the metadata file<br><code>C\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\965B295F92685B983726E076B583D923</code> </p>
+<p>we can find the zip file in the file with the same name in the content directory<br><code>C\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content</code></p>
+<p>answer: 0905089bb59887880312af06c769cebd967ffa7d2f652fe397ee972ddbed3d25</p>
+<blockquote>
+<p>(15&#x2F;17) When did the attacker execute the file used for exfiltration last time? Format YYYY-MM-DD HH:MM:SS </p>
+</blockquote>
+<p>if we extracted the zip file we will see file called <code>deep inside.zip</code> and I tried to reverse it to confirm if it used for exfiltration or not. </p>
+<p>summery of the malware:<br>this file was searching for files with extensions <code>.txt</code> or <code>.png</code> in the <code>Desktop</code> and <code>Downloads</code> then comprise them to one file <code>Exfiltrated_data.zip</code> then rename it to <code>Would you lose.png</code> and it used <code>sdelete.exe</code> to remove the files. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/d&f.png"
+                     
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/exfil.png"
+                     
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/0xl4ugh/sdelet.png"
+                     
+                ></p>
+<p>so we confirmed the exfiltration, now we need to go back to prefetch files.</p>
+<p>answer: <code>2024-12-11 04:42:35</code></p>
+<blockquote>
+<p>(16&#x2F;17) Before exfiltrating the attacker zipped some files for easy exfiltration. What was the final combined file they exfiltrated?</p>
+</blockquote>
+<p>answer: <code>Would you lose.png</code></p>
+<blockquote>
+<p>(17&#x2F;17) What treasure trove of files did the attacker manage to steal? Provide a complete list of the exfiltrated files. provide them in alphabetical order. Example (file1.ext-file2.ext- etc..) </p>
+</blockquote>
+<p>Guess what we’re going to do here? Of course, we’re going back to the prefetch files, to see the files that accessed by the malware. </p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">35: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\IMPORTANT.TXT</span><br><span class="line">36: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\APPDATA\LOCAL\TEMP\EXFILTRATED_DATA.ZIP (Keyword: True)</span><br><span class="line">37: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\MEETINGS.TXT</span><br><span class="line">38: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\REMINDERS.TXT</span><br><span class="line">39: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\RESEARCH.TXT</span><br><span class="line">40: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\STAND_PROUD_YOU_ARE_STRONG.PNG</span><br><span class="line">41: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\TASKS.TXT</span><br><span class="line">42: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DESKTOP\TODOLIST.TXT</span><br></pre></td></tr></table></figure></div>
+
+<p>we need the .txt and .png files from the desktop and downloads just. </p>
+<p>answer: <code>IMPORTANT.TXT-MEETINGS.TXT-REMINDERS.TXT-RESEARCH.TXT-STAND_PROUD_YOU_ARE_STRONG.PNG-TASKS.TXT-TODOLIST.TXT</code></p>
+<p>and we solved the challenges, thanks for reading and i want to thank the authors for this cool challenges. </p>
+
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 0xL4ugh CTF V5 Forensics Writeup</li>
+        <li><strong>Author:</strong> Mustafa Al-Zaareer</li>
+        <li><strong>Created at
+                :</strong> 2026-01-26 13:39:35</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2026-01-26 20:22:34
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://mustafaalzaareer.github.io/2026/01/26/0xL4ugh-CTF-V5-Forensics-Writeup/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+
+		
+
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        Comments
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.js';
+
+      function loadWaline() {
+        init({
+          el: '#waline',
+          serverURL: 'https://example.example.com',
+          dark: 'body[class~="dark-mode"]',
+          reaction: false,
+          requiredMeta: ['nick', 'mail'],
+          emoji: [],
+                    lang: 'zh-CN',
+        });
+      }
+
+      if (typeof swup !== 'undefined') {
+        loadWaline();
+      } else {
+        window.addEventListener('DOMContentLoaded', loadWaline);
+      }
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">On this page</div>
+		<div class="page-title">0xL4ugh CTF V5 Forensics Writeup</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Zero-Hour-Medium"><span class="nav-text">Zero Hour [Medium]</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Description"><span class="nav-text">Description</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Solution"><span class="nav-text">Solution</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Hood-Hard"><span class="nav-text">The Hood [Hard]</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Description-1"><span class="nav-text">Description</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Solution-1"><span class="nav-text">Solution</span></a></li></ol></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
 			</div>
 
 			
@@ -506,6 +902,26 @@
 		</div>
 	</div>
 
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
 	
 
 	<div class="right-side-tools-container">
@@ -609,6 +1025,7 @@
         containers: ["#swup"],
     });
 </script>
+
 
 
 
