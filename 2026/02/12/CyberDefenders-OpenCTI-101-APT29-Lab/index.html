@@ -77,7 +77,7 @@
     
     <!--- Seo Part-->
     
-    <link rel="canonical" href="https://mustafaalzaareer.github.io/2026/01/26/0xl4ugh-ctf-v5-forensics-writeup/"/>
+    <link rel="canonical" href="https://mustafaalzaareer.github.io/2026/02/12/cyberdefenders-opencti-101-apt29-lab/"/>
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
@@ -87,14 +87,14 @@
         
         <meta name="description" content="CTF player, forensics &amp; malware analysis">
 <meta property="og:type" content="article">
-<meta property="og:title" content="0xL4ugh CTF V5 Forensics Writeup">
-<meta property="og:url" content="https://mustafaalzaareer.github.io/2026/01/26/0xL4ugh-CTF-V5-Forensics-Writeup/index.html">
+<meta property="og:title" content="CyberDefenders:OpenCTI 101 - APT29 Lab">
+<meta property="og:url" content="https://mustafaalzaareer.github.io/2026/02/12/CyberDefenders-OpenCTI-101-APT29-Lab/index.html">
 <meta property="og:site_name" content="Mustafa Alzaareer&#39;s Blog">
 <meta property="og:description" content="CTF player, forensics &amp; malware analysis">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
-<meta property="article:published_time" content="2026-01-26T10:39:35.000Z">
-<meta property="article:modified_time" content="2026-01-26T17:22:34.089Z">
+<meta property="article:published_time" content="2026-02-12T12:26:07.000Z">
+<meta property="article:modified_time" content="2026-02-12T16:36:47.575Z">
 <meta property="article:author" content="Mustafa Alzaareer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
@@ -109,7 +109,7 @@
     
     <title>
         
-            0xL4ugh CTF V5 Forensics Writeup | Mustafa Al-zaareer&#39;s Blog
+            CyberDefenders:OpenCTI 101 - APT29 Lab | Mustafa Al-zaareer&#39;s Blog
         
     </title>
 
@@ -430,7 +430,7 @@
 		<div class="article-title relative w-full">
 			
 			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">0xL4ugh CTF V5 Forensics Writeup</h1>
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">CyberDefenders:OpenCTI 101 - APT29 Lab</h1>
 			</div>
 			
 		</div>
@@ -451,15 +451,15 @@
 					<div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2026-01-26 13:39:35</span>
-        <span class="mobile">2026-01-26 13:39:35</span>
+        <span class="desktop">2026-02-12 15:26:07</span>
+        <span class="mobile">2026-02-12 15:26:07</span>
         <span class="hover-info">Created</span>
     </span>
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2026-01-26 20:22:34</span>
-            <span class="mobile">2026-01-26 20:22:34</span>
+            <span class="desktop">2026-02-12 19:36:47</span>
+            <span class="mobile">2026-02-12 19:36:47</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -473,7 +473,7 @@
                     
                         
                         <li>
-                            <a href="/categories/Writeups/">Writeups</a>&nbsp;
+                            <a href="/categories/Cyberdefenders/">Cyberdefenders</a>&nbsp;
                         </li>
                     
                     
@@ -483,7 +483,7 @@
                             <li>></li>
                         
                         <li>
-                            <a href="/categories/Writeups/Forensics/">Forensics</a>&nbsp;
+                            <a href="/categories/Cyberdefenders/Threat-Intel/">Threat Intel</a>&nbsp;
                         </li>
                     
                     
@@ -512,219 +512,440 @@
 
 
 		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>in this CTF I played with my team PwnSec and after 48 Hours of competition, we secured second place.<br><img  
+			<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Hi, I’m Mustafa, also known as 0xMustafa. I have a strong passion for Blue Team operations and threat hunting, focusing on detecting, analyzing, and mitigating security incidents in real-world scenarios. Over the past year, I’ve been actively solving labs on CyberDefenders, and previously I achieved Top 1 globally on the platform.</p>
+<p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/score.png"
+                     data-src="/images/stacktech/scoarboard.jpg"
                       title="scoreboard"
                 ></p>
-<p>and I managed to solve 3&#x2F;4 of the DFIR challenges with me temmates so lets start with the writeup.</p>
-<h1 id="Zero-Hour-Medium"><a href="#Zero-Hour-Medium" class="headerlink" title="Zero Hour [Medium]"></a>Zero Hour [Medium]</h1><h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>Our intelligence unit has successfully identified a long-time cybercriminal. According to information provided by our confidential informant, he is preparing something major, and time is critical.<br>Your mission is to investigate the suspect’s laptop and uncover the following information:<br>What is the name of the victim?<br>What is the encryption key?<br>Flag: 0xL4ugh{name;key}</p>
-<h2 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h2><p>We have a disk image of the suspect’s laptop and we want to analyze it, first thing I decided to see the downloads folder to see what is the suspect downloaded, and we got some important things:<br>he donwloaded discord, outlook and telegram, all these applictions are used for commincations so I thought that we need to analyze them, so I started by analyzing the discord cache and it was empty with nothing intersting, then I moved to outlook artifacts and also nothing intersting so the last option is telegram but there is no artifacts related to it immeditly so after some search in the artifacts I found the first answer in the notifications database.<br><code>C:\Users\tarok\AppData\Local\Microsoft\Windows\Notifications\wpndatabase.db</code></p>
-<p>open this database using DB browser and select the Notifications table you can see a notification from telegram and the text is <code>next target is Purdue Pete</code><br><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/notification.png"
-                      alt="notifications"
-                ><br>now we have the first part lets move to the second one.<br>while analyzing the disk image I saw that the attacker downloaded WSL from the PowerShell History.<br><code>C:\Users\tarok\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt</code></p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wsl --install</span><br><span class="line">wsl --install -d kali-linux</span><br></pre></td></tr></table></figure></div>
-
-<p>so I decided to analyze the artifacts of wsl, we can find the WSL drive in<br><code>C:\Users\tarok\AppData\Local\wsl\&#123;e49649b6-5696-4474-a155-3ed599c71619&#125;</code> </p>
+<p>My goal is to help fellow security enthusiasts understand practical approaches in detection, analysis, and mitigation while keeping the content professional, clear, and actionable.</p>
+<p>Let’s dive in and have some fun while learning!</p>
+<h1 id="Scenario"><a href="#Scenario" class="headerlink" title="Scenario"></a>Scenario</h1><p>As a Threat Intelligence Analyst at SecureShot MDR, you play a key role in uncovering and analyzing emerging cyber threats to strengthen proactive defense. Currently focused on APT29, you leverage OpenCTI to track their evolving tactics, techniques, and procedures—connecting malware artifacts, infrastructure patterns, and past operations. Your intelligence directly informs detection strategies, helping the organization anticipate and mitigate advanced threats with precision.</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://cyberdefenders.org/blueteam-ctf-challenges/opencti-101-apt29/" >Lab Link<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>.</p>
+<h1 id="My-Analysis"><a href="#My-Analysis" class="headerlink" title="My Analysis"></a>My Analysis</h1><p>In this article, I will begin by explaining the meaning of APT and CTI (Cyber Threat Intelligence), as well as introducing OpenCTI and demonstrating how to use it.</p>
+<p>After establishing this foundation, I will use OpenCTI to collect and analyze intelligence related to APT29. The goal is to examine this group’s tactics, techniques, and procedures (TTPs), identify the malware families they have used, and gain deeper insight into their operational patterns.</p>
+<h2 id="APT"><a href="#APT" class="headerlink" title="APT"></a>APT</h2><p>An Advanced Persistent Threat (APT) is a sophisticated cyberattack in which attackers quietly enter and remain hidden inside a network for an extended period, carefully avoiding detection.</p>
+<p>APTs focus on secretly stealing sensitive information, such as intellectual property, financial data, or government secrets.</p>
+<p>The attackers typically gain access, establish hidden control, and patiently extract valuable data over weeks, months, or even years.</p>
+<h2 id="CTI-Cyber-Threat-Intelligence"><a href="#CTI-Cyber-Threat-Intelligence" class="headerlink" title="CTI (Cyber Threat Intelligence)"></a>CTI (Cyber Threat Intelligence)</h2><p>Cyber threat intelligence (CTI) is the process of collecting, analyzing, and applying data on cyber threats, adversaries, and attack methodologies to enhance an organization’s security posture. It involves taking raw threat data from various sources and transforming it into actionable insights that enable organizations to anticipate, detect, and respond to cyber risks.</p>
+<h2 id="OpenCTI"><a href="#OpenCTI" class="headerlink" title="OpenCTI"></a>OpenCTI</h2><p>OpenCTI (Open Cyber Threat Intelligence) is an open-source platform designed to aggregate, manage, and visualize cyber threat intelligence in one unified system.</p>
+<p>It is designed to:</p>
+<ul>
+<li>Store information about threats, like malware, campaigns, and IOCs.</li>
+<li>Analyze the relationships between these threats.</li>
+<li>Visualize the data, showing connections in an understandable way.</li>
+<li>Present the information so it’s easy to act upon</li>
+</ul>
+<h2 id="Exploring-APT29-using-OpenCTI"><a href="#Exploring-APT29-using-OpenCTI" class="headerlink" title="Exploring APT29 using OpenCTI"></a>Exploring APT29 using OpenCTI</h2><ul>
+<li>OpenCTI Dashboard</li>
+</ul>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/wsldriver.png"
-                      title="wsl driver"
-                > </p>
-<p>now we need to export the drive and try to analyze it.</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/setup.png"
-                     
-                ><br>now in the home directory we can find file <code>setup.exe</code> upload it to virus total and we can confirm that this file is ransomware, here we can find the encryption key but we need to analyze the malware.</p>
-<p>note: in this point I gived the malware to my temmate m7md and he analyzed it and gived me the key.<br><code>encryption key: CC2E406C5A9CF1202256672389781D0EBECBF73BBC091B035F88A41B90B7B07F</code></p>
-<p>Flag: <code>0xL4ugh&#123;Purdue Pete;CC2E406C5A9CF1202256672389781D0EBECBF73BBC091B035F88A41B90B7B07F&#125;</code></p>
-<h1 id="The-Hood-Hard"><a href="#The-Hood-Hard" class="headerlink" title="The Hood [Hard]"></a>The Hood [Hard]</h1><h2 id="Description-1"><a href="#Description-1" class="headerlink" title="Description"></a>Description</h2><p>Teddy MacDonald, a senior CIA operative, is under investigation after classified files leaked from his personal computer. A security camera captured an unidentified individual breaking into Teddy’s residence and tampering with his workstation.<br>Your mission is to analyze the evidence and uncover the truth—was this a targeted intrusion, or is there more to the story? Using your investigative skills, help the team piece together the events.</p>
-<h2 id="Solution-1"><a href="#Solution-1" class="headerlink" title="Solution"></a>Solution</h2><p>in this challenge the attacker access the computer physically. </p>
-<blockquote>
-<p>(1&#x2F;17) The intruder connected a device to Teddy’s machine during the breach. Can you uncover its serial number? </p>
-</blockquote>
-<p>ok after the attacker accessed the machine he connected a device(USB) to it and now we need to collect some informations about this device.<br>first thing is the serial number, we will use the regsitry hive <code>SYTEM</code> for this mission<br><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\USBSTOR</code> </p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/usbstore.png"
-                     
+                     data-src="/images/APT29/dash.png"
+                      title="dashboard"
                 ></p>
-<p>here we can se the serial number <code>UM2I126E</code> </p>
-<blockquote>
-<p>(2&#x2F;17) What is the manufacturer of this device? [company name] </p>
-</blockquote>
-<p>from the device name we can see the company name (just do some search about it)<br>answer <code>Transcend</code> </p>
-<blockquote>
-<p>(3&#x2F;17) What is the friendly name that, the intruder assigned to this device?</p>
-</blockquote>
-<p>here we will move to the second hive <code>SOFTWARE</code><br>and in the key <code>windows protable devices</code> or <code>MountedDevices</code> we can see the friendly name</p>
+<p>Here, we can view the latest reports, the most active threats, and the most prevalent malware. We can also search for any indicator of compromise (IOC) or tag (for example, APT29). Let’s perform a search for the APT29 group.</p>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/device.png"
-                     
+                     data-src="/images/APT29/search.png"
+                      title="APT29"
                 ></p>
-<p>answer: <code>OMKALALA</code></p>
-<blockquote>
-<p>(4&#x2F;17) After the guy walked in, we need to know how much time he used Teddy’s machine for?</p>
-</blockquote>
-<p>here we need to compine the investigation from multiple artifacts to find the answer, the attacker first connect the device to the machine in <code>2024-12-10 22:00:21</code> so he logon to the machine shortly before that, so we need to find the logon time of this LogonID, lets move to the security logs.<br>first logon to user a1l4m before this was in <code>2024-12-10 21:59:52</code> and the Logoff was in <code>12-10 22:05:45</code>.</p>
-<p>Logon:<br><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/logon.png"
-                     
-                > </p>
-<p>Logoff:<br><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/logoff.png"
-                     
-                > </p>
-<p>answer: <code>2024-12-10 21:59:52_2024-12-10 22:05:45</code> </p>
-<blockquote>
-<p>(5&#x2F;17) During their brief stay, the attacker appeared to be scouting the system. Which application did they use for reconnaissance?</p>
-</blockquote>
-<p>now we need to the applications that the attacker run it after he access the machine, so lets use prefetch files </p>
+<p>The search returns multiple results across different entity types, including reports, malware, campaigns, and intrusion sets. While all of these results are related to APT29, the most relevant starting point for our analysis is the Intrusion Set entry. This entity provides consolidated and high-level information about the threat group, making it the most useful reference for understanding APT29’s overall profile.</p>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/prefetch.png"
-                     
-                ><br>the first useful app that run after the logon was <code>taskmgr.exe</code></p>
-<blockquote>
-<p>(6&#x2F;17) In the reconnaissance stage the attacker found a vulnerable service on the machine. What is the CVE number assigned to this vulnerability?</p>
-</blockquote>
-<p>the attacker was use the task manager to enemurate the services installed in the system to find any vulnarable service.<br>This Question take some time from me but i got it in my method, after parse the $MFT and search for the created files after the logon I found one dll created after the logon.</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/mft.png"
-                     
-                > </p>
-<p>Fortunately we have the dll so we can get the hash and upload it to virustotal</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/virustotal1.png"
-                     
-                > </p>
-<p>ok we find the malware, lets find the cve that related to this dll and XPS Card Printer, just the first result in google was the cve. </p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/google.png"
-                     
-                > </p>
-<p>answer: <code>CVE-2024-34329</code></p>
-<p>the cve uses sideloading technique(replace the legitimate dll with a malicious dll in the same path, when the executable run it will load the dll and the maliciouse code will run)</p>
-<blockquote>
-<p>(7&#x2F;17) What is the SHA1 hash of the file that he used to exploit the service?<br>it is just the hash of the dll </p>
-</blockquote>
-<p>answer: <code>7ba477a58eb546b6d3cac3a86633b531ba82fa50</code></p>
-<blockquote>
-<p>(8&#x2F;17) What MITRE technique is used by the attacker here? </p>
-</blockquote>
-<p>Dll Side loading -&gt; <code>T1574.002</code></p>
-<blockquote>
-<p>(9&#x2F;17) To cover their tracks, the attacker executed multiple commands to disable system logging. What is the name of the file that has these commands? </p>
-</blockquote>
-<p>The first thing that came to my mind at that moment was that the commands should be in a PowerShell script, so I went to the powershell logs. </p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/powershell.png"
-                     
+                     data-src="/images/APT29/overview.png"
+                      title="overview"
                 ></p>
-<p>so we was in the right place. </p>
-<p>answer: <code>svc1D3C.ps1</code></p>
-<blockquote>
-<p>(10&#x2F;17) To establish persistence, The intruder downloaded additional payloads. What is the IP and Port of the storage C2 server? Format IP:Port</p>
-</blockquote>
-<p>here we need to reverse the dll becouse we dont have logs to store the network connections, i am not good at reverse but this part was easy and I got it by my self.</p>
-<p>answer: <code>3.75.217.26:8080</code></p>
-<blockquote>
-<p>(11&#x2F;17) The attacker established a shell connection to a remote server. Your job: pinpoint the exact time the connection started. Format YYYY-MM-DD HH:MM:SS</p>
-</blockquote>
-<p>ok let’s go back to the prefetch files and we need to find when the cmd.exe started. </p>
+<p>In the overview section, we can see general information about the group. By scrolling down, we can also examine recently created relationships, external references, and related intelligence reports.</p>
+<p>Target Summary: APT29</p>
+<p>APT29 is a threat group attributed to Russia’s Foreign Intelligence Service (SVR). (Citation: White House Imposing Costs RU Gov, April 2021; UK Government Malign RIS Activity, April 2021). The group has been active since at least 2008 and has primarily targeted government networks in Europe and NATO member states, as well as research institutes and think tanks.</p>
+<p>now we will move to the knowledge section so we can collect more information about this APT group. </p>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/cmd.png"
-                     
+                     data-src="/images/APT29/knowledge.png"
+                      title="knowledge"
                 ></p>
-<p>here we can find the first time when the cmd.exe run after the attacker logon to the machine. </p>
-<p>answer: <code>2024-12-11 04:01:41</code></p>
-<blockquote>
-<p>(12&#x2F;17) Which IP address and port were used by the attacker to establish the shell and communicate with the C2 server? Foramt IP:port</p>
-</blockquote>
-<p>This is the most difficult part of the entire CTF (anyone who has participated in this CTF knows what I mean).</p>
-<p>here we need to get the shellcode that the dll dropped, again back to me rev teammate, after the team managed to get the shellcode from the dll I just used <code>speakeasy</code> to run the shellcode and it works</p>
+<p>From the right-hand menu, we can explore a wide range of intelligence related to this group, including its targeted victims, associated campaigns, malware families, tools, and documented attack patterns. This section provides deeper insight into the group’s operational behavior and relationships within the threat landscape.</p>
+<ol>
+<li>Victimology</li>
+</ol>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/speak.png"
-                     
+                     data-src="/images/APT29/victim.png"
+                      title="Victimology"
                 ></p>
-<blockquote>
-<p>(13&#x2F;17) To ensure control over the system, The attacker runs some commands on the machine. What command did he use to enumerate the machine and ensure access?</p>
-</blockquote>
-<p>back to our friend <code>prefetch files</code> we can see <code>whoami.exe</code> executed after the <code>cmd.exe</code> </p>
-<p>answer: <code>whoami</code></p>
-<blockquote>
-<p>(14&#x2F;17) Before leaving, the attacker downloaded additional files for exfiltration. Can you uncover the SHA256 hash of the downloaded file? Hint: it’s a zip file </p>
-</blockquote>
-<p>I love prefetch files because tell every thing, after the command whoami we can see that certutil.exe executed so I went to certutil cach and i found a zip file downloaded from the same IP of the C2</p>
-<p><code>http://3.75.217.26/tools.7z</code></p>
-<p>this was in the metadata file<br><code>C\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\MetaData\965B295F92685B983726E076B583D923</code> </p>
-<p>we can find the zip file in the file with the same name in the content directory<br><code>C\Windows\System32\config\systemprofile\AppData\LocalLow\Microsoft\CryptnetUrlCache\Content</code></p>
-<p>answer: 0905089bb59887880312af06c769cebd967ffa7d2f652fe397ee972ddbed3d25</p>
-<blockquote>
-<p>(15&#x2F;17) When did the attacker execute the file used for exfiltration last time? Format YYYY-MM-DD HH:MM:SS </p>
-</blockquote>
-<p>if we extracted the zip file we will see file called <code>deep inside.zip</code> and I tried to reverse it to confirm if it used for exfiltration or not. </p>
-<p>summery of the malware:<br>this file was searching for files with extensions <code>.txt</code> or <code>.png</code> in the <code>Desktop</code> and <code>Downloads</code> then comprise them to one file <code>Exfiltrated_data.zip</code> then rename it to <code>Would you lose.png</code> and it used <code>sdelete.exe</code> to remove the files. </p>
+<p>The Victimology section provides insight into the geographic and sector-based targeting patterns of APT29. This information helps us understand the group’s strategic objectives and areas of operational focus.</p>
+<p>Targeted Countries:</p>
+<ul>
+<li>Poland</li>
+<li>Ukraine</li>
+<li>United States</li>
+<li>Japan</li>
+<li>Czechia</li>
+</ul>
+<p>Targeted Sectors:</p>
+<ul>
+<li>Telecommunications</li>
+<li>Technology</li>
+<li>Government</li>
+<li>Military</li>
+<li>Foreign Affairs</li>
+</ul>
+<p>Here is a more professional and well-structured version of your section:</p>
+<ol start="2">
+<li>Campaigns</li>
+</ol>
+<p>In this section, we can review the campaigns associated with the APT29 group. Campaign analysis helps us understand how the group executes operations over time, including the tools, malware, and techniques used in specific intrusions.</p>
+<ul>
+<li>SolarWinds Compromise</li>
+</ul>
+<p>The SolarWinds Compromise was a highly sophisticated supply chain operation attributed to APT29 and publicly disclosed in mid-December 2020. In this campaign, APT29 injected malicious code into the SolarWinds Orion software build process. The trojanized update was then digitally signed and distributed to customers through legitimate software updates, allowing the attackers to gain access to numerous high-profile organizations.</p>
+<p>Tools used in this campaign:</p>
+<ul>
+<li>Mimikatz</li>
+<li>AdFind</li>
+</ul>
+<p>Malware used in this campaign:</p>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/d&f.png"
-                     
+                     data-src="/images/APT29/solar.png"
+                      title="solarwind malwares"
                 ></p>
+<p>This campaign demonstrates APT29’s advanced capabilities in supply chain compromise, stealthy persistence, and large-scale espionage operations.</p>
+<ul>
+<li>Operation Ghost</li>
+</ul>
+<p>Operation Ghost was an APT29 campaign that began in 2013 and targeted ministries of foreign affairs in Europe, as well as the Washington, D.C. embassy of a European Union country. During this operation, APT29 deployed new malware families and leveraged web services, steganography, and dedicated command-and-control (C2) infrastructure tailored to each victim.<br>(Citation: ESET, The Dukes, October 2019)</p>
+<p>Tools used in this campaign:</p>
+<ul>
+<li>PsExec</li>
+</ul>
+<p>Malware used in this campaign:</p>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/exfil.png"
-                     
+                     data-src="/images/APT29/ghost.png"
+                      title="Operation Ghost malwares"
                 ></p>
+<p>Attack Patterns Observed in Operation Ghost<br>The campaign leveraged several MITRE ATT&amp;CK techniques, including:</p>
+<ul>
+<li><p>Initial Access:</p>
+<ul>
+<li>Valid Accounts (T1078)</li>
+</ul>
+</li>
+<li><p>Persistence:</p>
+<ul>
+<li>Valid Accounts (T1078)</li>
+<li>Event-Triggered Execution (T1546)</li>
+</ul>
+</li>
+<li><p>Privilege Escalation:</p>
+<ul>
+<li>Valid Accounts (T1078)</li>
+<li>Event-Triggered Execution (T1546)</li>
+</ul>
+</li>
+<li><p>Command and Control (C2):</p>
+<ul>
+<li>Data Obfuscation (T1001)</li>
+<li>Web Service (T1102)</li>
+</ul>
+</li>
+</ul>
+<p>The use of legitimate credentials, event-triggered execution mechanisms, and obfuscated C2 communications highlights APT29’s emphasis on stealth, persistence, and long-term intelligence collection.</p>
+<ol start="3">
+<li>Tools</li>
+</ol>
+<p>We will now step back to examine the tools most commonly used by the APT29 group and analyze the purpose of each tool within their operations.</p>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/images/0xl4ugh/sdelet.png"
-                     
+                     data-src="/images/APT29/Tools.png"
+                      title="APT29 Tools"
                 ></p>
-<p>so we confirmed the exfiltration, now we need to go back to prefetch files.</p>
-<p>answer: <code>2024-12-11 04:42:35</code></p>
-<blockquote>
-<p>(16&#x2F;17) Before exfiltrating the attacker zipped some files for easy exfiltration. What was the final combined file they exfiltrated?</p>
+<p>Tools Breakdown</p>
+<ul>
+<li><p>Tor<br>  Tor is a software suite and network that provides increased anonymity on the Internet. It creates a multi-hop proxy network and utilizes multilayer encryption to protect both the message and routing information.</p>
+</li>
+<li><p>Tasklist<br>  The Tasklist utility displays a list of applications and services with their Process IDs (PID) for all tasks running on either a local or a remote computer.</p>
+</li>
+<li><p>Systeminfo<br>  Systeminfo is a Windows utility that can be used to gather detailed information about a computer.</p>
+</li>
+<li><p>Sliver<br>  Sliver is an open source, cross-platform, red team command and control framework written in Golang.</p>
+</li>
+<li><p>SDelete<br>  SDelete is an application that securely deletes data in a way that makes it unrecoverable. It is part of the Microsoft Sysinternals suite of tools. </p>
+</li>
+<li><p>ROADTools<br>  ROADTools is a framework for enumerating Azure Active Directory environments. The tool is written in Python and publicly available on GitHub.</p>
+</li>
+<li><p>PsExec<br>  PsExec is a free Microsoft tool that can be used to execute a program on another computer. It is used by IT administrators and attackers.</p>
+</li>
+<li><p>Net<br>  The Net utility is a component of the Windows operating system. It is used in command-line operations for control of users, groups, services, and network connections. </p>
+</li>
+<li><p>Mimikatz<br>  Mimikatz is a credential dumper capable of obtaining plaintext Windows account logins and passwords, along with many other features that make it useful for testing the security of networks</p>
+</li>
+<li><p>meek<br>  meek is an open-source Tor plugin that tunnels Tor traffic through HTTPS connections.</p>
+</li>
+<li><p>ipconfig<br>  ipconfig is a Windows utility that can be used to find information about a system’s TCP&#x2F;IP, DNS, DHCP, and adapter configuration.</p>
+</li>
+<li><p>Impacket<br>  Impacket is an open source collection of modules written in Python for programmatically constructing and manipulating network protocols. Impacket contains several tools for remote service execution, Kerberos manipulation, Windows credential dumping, packet sniffing, and relay attacks.</p>
+</li>
+<li><p>BloodHound<br>  BloodHound is an Active Directory (AD) reconnaissance tool that can reveal hidden relationships and identify attack paths within an AD environment.</p>
+</li>
+<li><p>AdFind<br>  AdFind is a free command-line query tool that can be used for gathering information from Active Directory.</p>
+</li>
+<li><p>AADInternals<br>  AADInternals is a PowerShell-based framework for administering, enumerating, and exploiting Azure Active Directory.</p>
+</li>
+</ul>
+<ol start="4">
+<li>Attack Patterns</li>
+</ol>
+<p>APT29 employs a wide range of attack patterns, making it one of the most sophisticated threat groups. While it is not possible to cover all patterns in this post, we will highlight some key techniques to illustrate their operational approach.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/TTP.png"
+                      title="APT29 TTPs"
+                ></p>
+<ul>
+<li><p>Reconnaissance</p>
+<ul>
+<li>Gather Victim Identity Information(T1589)</li>
+<li>Active Scanning(T1595)</li>
+</ul>
+</li>
+<li><p>Initial Access</p>
+<ul>
+<li>Drive-by Compromise(T1189) </li>
+<li>Exploit Public-Facing Application(T1190)</li>
+</ul>
+</li>
+<li><p>Execution </p>
+<ul>
+<li>Windows Management Instrumentation(WMI)</li>
+<li>Native API(T1106)</li>
+</ul>
+</li>
+<li><p>Persistence </p>
+<ul>
+<li>External Remote Services(T1133)</li>
+<li>Create Account(T1136)</li>
+</ul>
+</li>
+<li><p>Impact </p>
+<ul>
+<li>Inhibit System Recovery(T1490)</li>
+</ul>
+</li>
+<li><p>Defense Evasion</p>
+<ul>
+<li>Modify Registry(T1112)</li>
+<li>Trusted Developer Utilities Proxy Execution(T1127)</li>
+</ul>
+</li>
+<li><p>Privilege Escalation</p>
+<ul>
+<li>Process Injection</li>
+<li>Exploitation for Privilege Escalation(T1068)</li>
+</ul>
+</li>
+<li><p>Credential Access</p>
+<ul>
+<li>Multi-Factor Authentication Interception(T1111)</li>
+<li>Steal Application Access Token(T1528)</li>
+</ul>
+</li>
+<li><p>Exfiltration</p>
+<ul>
+<li>Data Transfer Size Limits(T1030)</li>
+<li>Exfiltration Over Alternative Protocol(T1048)</li>
+</ul>
+</li>
+</ul>
+<ol start="5">
+<li>Indicators<br>In this section, we review indicators associated with the APT29 group, including domains, IP addresses, and other artifacts linked to their infrastructure. Indicators of compromise (IOCs) are critical for detecting, mitigating, and responding to attacks by this group.</li>
+</ol>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/ind.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Examples of Domain Names Related to APT29</p>
+<ul>
+<li>simplesalsamix[.]com</li>
+<li>www[.]willyminiatures[.]com</li>
+<li>crossfity[.]com</li>
+<li>techspaceinfo[.]com</li>
+</ul>
+<h1 id="Solving-the-Questions"><a href="#Solving-the-Questions" class="headerlink" title="Solving the Questions"></a>Solving the Questions</h1><blockquote>
+<ol>
+<li>What are the names of these two key campaigns in APT29’s history?</li>
+</ol>
 </blockquote>
-<p>answer: <code>Would you lose.png</code></p>
+<p>Answer: <code>SolarWinds Compromise , Operation Ghost</code> </p>
 <blockquote>
-<p>(17&#x2F;17) What treasure trove of files did the attacker manage to steal? Provide a complete list of the exfiltrated files. provide them in alphabetical order. Example (file1.ext-file2.ext- etc..) </p>
+<ol start="2">
+<li>What is the name of the Tor plugin mostly used by APT29 to tunnel Tor traffic through  HTTPS connections?</li>
+</ol>
 </blockquote>
-<p>Guess what we’re going to do here? Of course, we’re going back to the prefetch files, to see the files that accessed by the malware. </p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">35: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\IMPORTANT.TXT</span><br><span class="line">36: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\APPDATA\LOCAL\TEMP\EXFILTRATED_DATA.ZIP (Keyword: True)</span><br><span class="line">37: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\MEETINGS.TXT</span><br><span class="line">38: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\REMINDERS.TXT</span><br><span class="line">39: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\RESEARCH.TXT</span><br><span class="line">40: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\STAND_PROUD_YOU_ARE_STRONG.PNG</span><br><span class="line">41: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DOWNLOADS\TASKS.TXT</span><br><span class="line">42: \VOLUME&#123;01db3162ca695d7e-96ca730a&#125;\USERS\A1L4M\DESKTOP\TODOLIST.TXT</span><br></pre></td></tr></table></figure></div>
-
-<p>we need the .txt and .png files from the desktop and downloads just. </p>
-<p>answer: <code>IMPORTANT.TXT-MEETINGS.TXT-REMINDERS.TXT-RESEARCH.TXT-STAND_PROUD_YOU_ARE_STRONG.PNG-TASKS.TXT-TODOLIST.TXT</code></p>
-<p>and we solved the challenges, thanks for reading and i want to thank the authors for this cool challenges. </p>
+<p>Answer: <code>meek</code> </p>
+<blockquote>
+<ol start="3">
+<li>which MITRE ATT&amp;CK technique IDs are linked to APT29’s most recently observed attack patterns related to data exfiltration tactic?</li>
+</ol>
+</blockquote>
+<p>Answer: <code>T1048 , T1030</code></p>
+<blockquote>
+<ol start="4">
+<li>The domain crossfity[.]com has been associated with activity attributed to APT29. Which adversary emulation tool and malware family are linked to this domain?</li>
+</ol>
+</blockquote>
+<p>To investigate this domain, we navigate to the Indicators section in OpenCTI and click on the domain to view detailed information.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/domain1.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>By scrolling down, we can observe the relationships associated with this domain. In this case, the domain is linked to the adversary emulation tool Cobalt Strike and the malware family EnvyScout.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/domain2.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Answer: <code>Cobalt Strike, EnvyScout</code></p>
+<blockquote>
+<ol start="5">
+<li>Given that the report references the domain name IOC crossfity[.]com, which other domain was identified as being associated with the same threat campaign?</li>
+</ol>
+</blockquote>
+<p>There is one report under <code>Latest containers about the object</code> section for this domain. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/domain3.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>lets follow the report and read it to find the another domain. </p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://unit42.paloaltonetworks.com/cloaked-ursa-online-storage-services-campaigns/" >Link to the Report<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/domain4.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Answer: <code>techspaceinfo.com</code></p>
+<blockquote>
+<ol start="6">
+<li>In the April 2023: Old Wine in a New Bottle campaign, APT29 reused a diplomatic-themed lure spoofing the Czechia Embassy, inviting recipients to a wine-tasting event. Which phishing website link was embedded in the document to deliver either an ISO or ZIP archive to the target?</li>
+</ol>
+</blockquote>
+<p>Here we need to find any report related to APT29 talking about <code>diplomatic-themed lure spoofing</code> and read it, we can back to the dashboard and search for APT29 to see all reports related to APT29.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/report2.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>we can see that there is a report called <code>Backchannel Diplomacy: APT29’s Rapidly Evolving Diplomatic Phishing Operations</code> so lets read it. </p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://cloud.google.com/blog/topics/threat-intelligence/apt29-evolving-diplomatic-phishing/" >Link to the Report<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/report3.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Answer: <code>https://sylvio[.]com[.]br/form.php</code> </p>
+<blockquote>
+<ol start="7">
+<li>In the APT29 campaign from March 2023—known as the Earthquake-Themed Türkiye Campaign—which hostname was utilized?</li>
+</ol>
+</blockquote>
+<p>from the same report. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/report4.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Answer: <code>www.willyminiatures.com</code> </p>
+<blockquote>
+<ol start="8">
+<li>What is the name of the PDF decoy used in APT29’s Earthquake-Themed Türkiye Campaign?</li>
+</ol>
+</blockquote>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/report5.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Answer: <code>e-yazi.pdf</code> </p>
+<blockquote>
+<ol start="9">
+<li>In the June 2023 Split ROOTSAW Campaign, the attacker deployed a variant of the ROOTSAW dropper specific to that operation. What is the MD5 hash of the ROOTSAW dropper with the .svg extension used in this campaign?</li>
+</ol>
+</blockquote>
+<p>We are still in the same report.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/report6.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Answer: <code>295527e2e38da97167979ade004de880</code></p>
+<blockquote>
+<ol start="10">
+<li>Tracking phishing infrastructure is essential for identifying current and future threat activity. In the campaign, NOBELIUM uses Poland’s Ambassador’s Visit to the U.S. to target EU governments that are assisting Ukraine. Which two URL indicators were used by APT29 in a phishing operation involving a weaponized document spoofing an El Salvador-based library website?<br>Note: Do not include square brackets in your answer.</li>
+</ol>
+</blockquote>
+<p>Here we need to search for another report related to <code>NOBELIUM uses Poland&#39;s Ambassador’s Visit to the U.S. to target EU governments that are assisting Ukraine</code>, we can go to Analaysis -&gt; Reports in OpenCTI and see all reports ralated to APT29.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/report7.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>we can see one report under the title <code>NOBELIUM Uses Poland&#39;s Ambassador’s Visit to the U.S. to Target EU Governments</code>, so this what we want, lets read it.</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://otx.alienvault.com/pulse/64160883fe275bce4bb6b07f" >Link to the Report<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/report8.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Answer: <code>https://literaturaelsalvador.com/Schedule.html , https://literaturaelsalvador.com/Instructions.html</code> </p>
+<blockquote>
+<ol start="11">
+<li>Each of the previously mentioned URLs delivered .iso files containing a .lnk file and a .dll file with matching hashes. What is the command used by the .lnk file?</li>
+</ol>
+</blockquote>
+<p>in the first we need to find the .lnk file, then we can analyze it to find the command line. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/report9.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Now we have the .lnk file, we can easly go to virustotal and get the command. </p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/APT29/virustotal.png"
+                      title="APT29 Indicators"
+                ></p>
+<p>Answer: <code>C:\Windows\system32\rundll32.exe BugSplatRc64.dll,InitiateDs</code> </p>
+<h1 id="Conculsion"><a href="#Conculsion" class="headerlink" title="Conculsion"></a>Conculsion</h1><p>In this analysis, we leveraged OpenCTI to explore and examine the APT29 threat group from a structured threat intelligence perspective. By analyzing victimology, campaigns, tools, attack patterns, and indicators of compromise (IOCs), we gained a comprehensive understanding of the group’s operational behavior and strategic objectives.</p>
+<p>Thank you for reading. </p>
 
 		</div>
 
@@ -732,18 +953,18 @@
 		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
 			<div class="article-copyright-info-container">
     <ul>
-        <li><strong>Title:</strong> 0xL4ugh CTF V5 Forensics Writeup</li>
+        <li><strong>Title:</strong> CyberDefenders:OpenCTI 101 - APT29 Lab</li>
         <li><strong>Author:</strong> Mustafa Al-Zaareer</li>
         <li><strong>Created at
-                :</strong> 2026-01-26 13:39:35</li>
+                :</strong> 2026-02-12 15:26:07</li>
         
             <li>
                 <strong>Updated at
-                    :</strong> 2026-01-26 20:22:34
+                    :</strong> 2026-02-12 19:36:47
             </li>
         
         <li>
-            <strong>Link:</strong> https://mustafaalzaareer.github.io/2026/01/26/0xL4ugh-CTF-V5-Forensics-Writeup/
+            <strong>Link:</strong> https://mustafaalzaareer.github.io/2026/02/12/CyberDefenders-OpenCTI-101-APT29-Lab/
         </li>
         <li>
             <strong>
@@ -768,18 +989,18 @@
 		
 		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
 			
-			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/2026/01/27/CyberDefenders-StarkTech-Incident-APT41-Lab/">
-					<span class="left arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-left"></i>
-					</span>
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2026/01/27/CyberDefenders-StarkTech-Incident-APT41-Lab/">
 					<span class="title flex justify-center items-center">
 						<span class="post-nav-title-item truncate max-w-48">CyberDefenders: StarkTech Incident - APT41 Lab</span>
-						<span class="post-nav-item">Prev posts</span>
+						<span class="post-nav-item">Next posts</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
 					</span>
 				</a>
 			</div>
-			
 			
 		</div>
 		
@@ -793,8 +1014,8 @@
 		<div class="post-toc-wrap">
 	<div class="post-toc">
 		<div class="toc-title">On this page</div>
-		<div class="page-title">0xL4ugh CTF V5 Forensics Writeup</div>
-		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Zero-Hour-Medium"><span class="nav-text">Zero Hour [Medium]</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Description"><span class="nav-text">Description</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Solution"><span class="nav-text">Solution</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Hood-Hard"><span class="nav-text">The Hood [Hard]</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Description-1"><span class="nav-text">Description</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Solution-1"><span class="nav-text">Solution</span></a></li></ol></li></ol>
+		<div class="page-title">CyberDefenders:OpenCTI 101 - APT29 Lab</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Scenario"><span class="nav-text">Scenario</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#My-Analysis"><span class="nav-text">My Analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#APT"><span class="nav-text">APT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CTI-Cyber-Threat-Intelligence"><span class="nav-text">CTI (Cyber Threat Intelligence)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenCTI"><span class="nav-text">OpenCTI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Exploring-APT29-using-OpenCTI"><span class="nav-text">Exploring APT29 using OpenCTI</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Solving-the-Questions"><span class="nav-text">Solving the Questions</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conculsion"><span class="nav-text">Conculsion</span></a></li></ol>
 
 	</div>
 </div>
