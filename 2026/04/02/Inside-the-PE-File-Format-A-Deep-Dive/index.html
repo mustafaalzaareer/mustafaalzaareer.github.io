@@ -94,7 +94,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
 <meta property="article:published_time" content="2026-04-02T14:35:31.000Z">
-<meta property="article:modified_time" content="2026-04-02T19:18:03.882Z">
+<meta property="article:modified_time" content="2026-04-02T19:29:26.021Z">
 <meta property="article:author" content="Mustafa Alzaareer">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
@@ -458,8 +458,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2026-04-02 22:18:03</span>
-            <span class="mobile">2026-04-02 22:18:03</span>
+            <span class="desktop">2026-04-02 22:29:26</span>
+            <span class="mobile">2026-04-02 22:29:26</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -747,6 +747,13 @@
 </ul>
 <p>When the loader processes the ILT, it uses the Hint and Name to resolve the function’s actual address in the DLL.</p>
 <h2 id="Import-Address-Table-IAT"><a href="#Import-Address-Table-IAT" class="headerlink" title="Import Address Table (IAT)"></a>Import Address Table (IAT)</h2><p>The IAT is where the executable ultimately calls imported functions.<br>On disk, the IAT is identical to the ILT.<br>When the binary is loaded, the loader overwrites each entry with the real address of the imported function in memory.</p>
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>In this post, we explored the structure of Portable Executable (PE) files, covering the DOS Header, NT Headers, Optional Header, Data Directories, Section Headers, Sections, and finally the PE Imports. Understanding these components is crucial for anyone working in reverse engineering, malware analysis, or Windows internals, as it reveals how Windows organizes and loads executable files.</p>
+<h1 id="References"><a href="#References" class="headerlink" title="References"></a>References</h1><ol>
+<li>Microsoft Docs – <a class="link"   target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/debug/pe-format" >Portable Executable (PE) Format<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+<li>Microsoft Docs – <a class="link"   target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/windows/win32/winprog/windows-data-types" >Windows Data Types<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://github.com/hasherezade/pe-bear" >PE-Bear<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://0xrick.github.io/win-internals/pe1/" >0xRick’s Blog<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+</ol>
 
 		</div>
 
@@ -761,7 +768,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2026-04-02 22:18:03
+                    :</strong> 2026-04-02 22:29:26
             </li>
         
         <li>
@@ -816,7 +823,7 @@
 	<div class="post-toc">
 		<div class="toc-title">On this page</div>
 		<div class="page-title">Inside the PE File Format: A Deep Dive</div>
-		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Overview-of-PE-file-structure"><span class="nav-text">Overview of PE file structure</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PE-Structure-Overview"><span class="nav-text">PE Structure Overview</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Headers"><span class="nav-text">Headers</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DOS-Header"><span class="nav-text">DOS Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DOS-Stub"><span class="nav-text">DOS Stub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Rich-Header"><span class="nav-text">Rich Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NT-Headers"><span class="nav-text">NT Headers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Directories"><span class="nav-text">Data Directories</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Section-Headers"><span class="nav-text">Section Headers</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sections"><span class="nav-text">Sections</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PE-Imports"><span class="nav-text">PE Imports</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Import-Directory-Table"><span class="nav-text">Import Directory Table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Import-Lookup-Table-ILT-Import-Name-Table-INT"><span class="nav-text">Import Lookup Table (ILT) &#x2F; Import Name Table (INT)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hint-Name-Table"><span class="nav-text">Hint&#x2F;Name Table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Import-Address-Table-IAT"><span class="nav-text">Import Address Table (IAT)</span></a></li></ol></li></ol>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Overview-of-PE-file-structure"><span class="nav-text">Overview of PE file structure</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PE-Structure-Overview"><span class="nav-text">PE Structure Overview</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Headers"><span class="nav-text">Headers</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DOS-Header"><span class="nav-text">DOS Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DOS-Stub"><span class="nav-text">DOS Stub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Rich-Header"><span class="nav-text">Rich Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NT-Headers"><span class="nav-text">NT Headers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Directories"><span class="nav-text">Data Directories</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Section-Headers"><span class="nav-text">Section Headers</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sections"><span class="nav-text">Sections</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PE-Imports"><span class="nav-text">PE Imports</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Import-Directory-Table"><span class="nav-text">Import Directory Table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Import-Lookup-Table-ILT-Import-Name-Table-INT"><span class="nav-text">Import Lookup Table (ILT) &#x2F; Import Name Table (INT)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hint-Name-Table"><span class="nav-text">Hint&#x2F;Name Table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Import-Address-Table-IAT"><span class="nav-text">Import Address Table (IAT)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conclusion"><span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#References"><span class="nav-text">References</span></a></li></ol>
 
 	</div>
 </div>
