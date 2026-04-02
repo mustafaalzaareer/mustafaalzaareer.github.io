@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="Mustafa Al-Zaareer">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://mustafaalzaareer.github.io/2026/04/02/inside-the-pe-file-format-a-deep-dive/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+    
+        
+        <meta name="description" content="CTF player, forensics &amp; malware analysis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Inside the PE File Format: A Deep Dive">
+<meta property="og:url" content="https://mustafaalzaareer.github.io/2026/04/02/Inside-the-PE-File-Format-A-Deep-Dive/index.html">
+<meta property="og:site_name" content="Mustafa Alzaareer&#39;s Blog">
+<meta property="og:description" content="CTF player, forensics &amp; malware analysis">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
+<meta property="article:published_time" content="2026-04-02T14:35:31.000Z">
+<meta property="article:modified_time" content="2026-04-02T19:18:03.882Z">
+<meta property="article:author" content="Mustafa Alzaareer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mustafaalzaareer.github.io/images/hacker.svg">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/hacker.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/hacker.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/hacker.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Inside the PE File Format: A Deep Dive | Mustafa Al-zaareer&#39;s Blog
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"mustafaalzaareer.github.io","root":"/","language":"en","path":"search.json"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/hacker.svg","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":true,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/hacker.svg","description":null},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wall3.jpg","dark":"/images/wall3.jpg"},"title":"Mustafa Al-zaareer's Blog","subtitle":{"text":["I'm Mustafa Al-Zaareer","Cyber Security Student"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":"https://github.com/mustafaalzaareer","instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.5","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"CATEGORIES":{"path":"/categories","icon":"fa-regular fa-folder"},"ARCHIVE":{"path":"/archive","icon":"fa-regular fa-archive"},"About":{"path":"/about","icon":"fa-regular fa-user"}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/8/17 11:45:14"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+
+<body>
+	<div class="progress-bar-container">
+	
+	<span class="scroll-progress-bar"></span>
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                Mustafa Al-zaareer&#39;s Blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder fa-fw"></i>
+                                    CATEGORIES
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archive"
+                                        >
+                                    <i class="fa-regular fa-archive fa-fw"></i>
+                                    ARCHIVE
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/about"
+                                        >
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    ABOUT
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                        <li class="navbar-item search search-popup-trigger">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                CATEGORIES
+                            </span>
+                            
+                                <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archive"
+                        >
+                            <span>
+                                ARCHIVE
+                            </span>
+                            
+                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/about"
+                        >
+                            <span>
+                                ABOUT
+                            </span>
+                            
+                                <i class="fa-regular fa-user fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">0</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">5</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">4</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">Inside the PE File Format: A Deep Dive</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+				<img src="/images/hacker.svg">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">Mustafa Al-Zaareer</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv1</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2026-04-02 17:35:31</span>
+        <span class="mobile">2026-04-02 17:35:31</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-04-02 22:18:03</span>
+            <span class="mobile">2026-04-02 22:18:03</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p><strong>What is this?</strong><br>This post is a deep dive into the Portable Executable (PE) file format. We’ll explore how PE files are structured on disk and how they are mapped and loaded into memory.</p>
+<p><strong>Why we need to learn the PE file format?</strong><br>Knowledge of the PE file format is fundamental for anyone working in reverse engineering or malware analysis. Many techniques used in both fields rely heavily on how executables are structured and loaded into memory. Without a clear understanding of PE internals, it becomes difficult to properly analyze binaries, identify suspicious behavior, or understand how certain techniques are implemented.</p>
+<h1 id="Overview-of-PE-file-structure"><a href="#Overview-of-PE-file-structure" class="headerlink" title="Overview of PE file structure"></a>Overview of PE file structure</h1><p><strong>PE files</strong><br>PE stands for Portable Executable, it’s a file format for executables used in Windows operating systems,not only <code>.exe</code> files are PE files, dynamic link libraries (<code>.dll</code>), Kernel modules (<code>.srv</code>) and many others are also PE files.</p>
+<p>A PE file is a data structure that contains all the information required by the operating system loader to map the executable into memory and start its execution.</p>
+<h2 id="PE-Structure-Overview"><a href="#PE-Structure-Overview" class="headerlink" title="PE Structure Overview"></a>PE Structure Overview</h2><p>A typical PE file follows a well-defined structure, as illustrated in the figure below:<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PE/overview.png"
+                      title="Overview of PE"
+                > </p>
+<p><strong>DOS Header</strong><br>Every PE file starts with a 64-byte structure called the DOS header, which enables the file to be identified as a valid MS-DOS executable.</p>
+<p><strong>DOS Stub</strong><br>Following the DOS header is the DOS stub, a small MS-DOS–compatible program whose only purpose is to display the message “This program cannot be run in DOS mode” if the executable is run in a DOS environment.</p>
+<p><strong>NT Headers</strong><br>The NT Headers structure contains three main components:</p>
+<ul>
+<li>PE Signature: A 4-byte magic value used to validate the file as a PE format.</li>
+<li>File Header (COFF Header): Holds metadata about the binary, including target machine, number of sections, and characteristics.</li>
+<li>Optional Header: The core of the PE structure. While optional for object files, it is required for executable images. It defines key attributes such as the entry point, image base, and memory alignment, all of which are used by the OS loader during execution.</li>
+</ul>
+<p><strong>Section Table</strong><br>The Section Table, located directly after the Optional Header, is an array of Image Section Headers. Each header describes a section in the PE file, including its size, location, and characteristics.</p>
+<p><strong>Sections</strong><br>Sections store the real content of the PE file, such as code, data, and resources. Each section has its own purpose and is described by a header in the Section Table.</p>
+<p><strong>PE-bear</strong><br>To understand the PE file structure, it helps to visualize it with a PE viewer. My personal favorite is PE-bear, which we’ll use in this post to examine the different headers and sections.</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PE/pe-bear.png"
+                      title="Overview of PE"
+                > </p>
+<p>Looking at the left panel of PE-bear, the structure of this sample file becomes clear, showing headers and sections just as described.</p>
+<h1 id="Headers"><a href="#Headers" class="headerlink" title="Headers"></a>Headers</h1><h2 id="DOS-Header"><a href="#DOS-Header" class="headerlink" title="DOS Header"></a>DOS Header</h2><p>The DOS header, also called the MS-DOS header, is a 64-byte structure located at the very start of a PE file.</p>
+<p>While it’s not essential for the functionality of PE files on modern Windows systems, it exists for backward compatibility. This header identifies the file as an MS-DOS executable. If the file is loaded on an MS-DOS system, the DOS stub gets executed instead of the actual program. Without this header, attempting to run the executable on MS-DOS would fail, producing a generic error.</p>
+<p><strong>Structure</strong><br>The DOS header is defined in <code>winnt.h</code> as the <code>IMAGE_DOS_HEADER</code> structure:</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DOS_HEADER</span> &#123;</span>      <span class="comment">// DOS .EXE header</span></span><br><span class="line">    WORD   e_magic;                     <span class="comment">// Magic number</span></span><br><span class="line">    WORD   e_cblp;                      <span class="comment">// Bytes on last page of file</span></span><br><span class="line">    WORD   e_cp;                        <span class="comment">// Pages in file</span></span><br><span class="line">    WORD   e_crlc;                      <span class="comment">// Relocations</span></span><br><span class="line">    WORD   e_cparhdr;                   <span class="comment">// Size of header in paragraphs</span></span><br><span class="line">    WORD   e_minalloc;                  <span class="comment">// Minimum extra paragraphs needed</span></span><br><span class="line">    WORD   e_maxalloc;                  <span class="comment">// Maximum extra paragraphs needed</span></span><br><span class="line">    WORD   e_ss;                        <span class="comment">// Initial (relative) SS value</span></span><br><span class="line">    WORD   e_sp;                        <span class="comment">// Initial SP value</span></span><br><span class="line">    WORD   e_csum;                      <span class="comment">// Checksum</span></span><br><span class="line">    WORD   e_ip;                        <span class="comment">// Initial IP value</span></span><br><span class="line">    WORD   e_cs;                        <span class="comment">// Initial (relative) CS value</span></span><br><span class="line">    WORD   e_lfarlc;                    <span class="comment">// File address of relocation table</span></span><br><span class="line">    WORD   e_ovno;                      <span class="comment">// Overlay number</span></span><br><span class="line">    WORD   e_res[<span class="number">4</span>];                    <span class="comment">// Reserved words</span></span><br><span class="line">    WORD   e_oemid;                     <span class="comment">// OEM identifier (for e_oeminfo)</span></span><br><span class="line">    WORD   e_oeminfo;                   <span class="comment">// OEM information; e_oemid specific</span></span><br><span class="line">    WORD   e_res2[<span class="number">10</span>];                  <span class="comment">// Reserved words</span></span><br><span class="line">    LONG   e_lfanew;                    <span class="comment">// File address of new exe header</span></span><br><span class="line">&#125; IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;</span><br></pre></td></tr></table></figure></div>
+
+<p>Most of the members in this structure are only relevant for MS-DOS, but a few are critical for Windows PE loading. The key members are:</p>
+<ul>
+<li><code>e_magic</code>: The first member of the DOS header, a 2-byte WORD. It’s called the magic number and has a fixed value of 0x5A4D (MZ in ASCII). It serves as the signature that identifies the file as an MS-DOS executable.</li>
+<li><code>e_lfanew</code>: Located at offset 0x3C in the DOS header, this member holds the offset to the start of the NT headers. On Windows systems, this is crucial for the PE loader because it tells the loader where to find the File Header and Optional Header.</li>
+</ul>
+<p>We can view the contents of the DOS Header using PE-bear on our sample PE file:<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PE/DOS.png"
+                      title="DOS Header in PE-bear"
+                > </p>
+<p>As you can see, the first member of the header is the magic number, which has the fixed value 0x5A4D (MZ) that we discussed earlier.</p>
+<p>The last member of the DOS Header, located at offset <code>0x3C</code>, is labeled “File address of new exe header” (<code>e_lfanew</code>). In our sample file, it has the value <code>0xB0</code>. If we navigate to that offset in the file, we find the start of the NT Headers, just as expected.</p>
+<h2 id="DOS-Stub"><a href="#DOS-Stub" class="headerlink" title="DOS Stub"></a>DOS Stub</h2><p>The DOS stub is a small MS-DOS program embedded in the PE file. Its only purpose is to display an error message if the executable is run in a DOS environment and then exit. By default, this message is:</p>
+<p>“This program cannot be run in DOS mode.”</p>
+<h2 id="Rich-Header"><a href="#Rich-Header" class="headerlink" title="Rich Header"></a>Rich Header</h2><p>Now that we’ve explored the DOS Header and DOS Stub, there’s still a chunk of data sitting between the DOS Stub and the start of the NT Headers that we haven’t covered yet.</p>
+<p>This chunk is commonly known as the Rich Header. It’s an undocumented structure present only in executables built using the Microsoft Visual Studio toolset. The Rich Header contains metadata about the tools used to compile the executable, including tool names, types, versions, and build numbers.</p>
+<p>Interestingly, most resources on PE files don’t mention the Rich Header at all. That makes sense because it isn’t strictly part of the PE format — it can even be zeroed out without affecting the executable’s functionality. Microsoft includes it mainly for internal build tracking.</p>
+<p><strong>Structure of the Rich Header</strong><br>The Rich Header is made up of:</p>
+<ul>
+<li>XORed data</li>
+<li>Signature (<code>Rich</code>)</li>
+<li>32-bit checksum (used as the XOR key)</li>
+</ul>
+<p>The encrypted data starts with a DWORD signature DanS, followed by three zeroed-out DWORDs for padding. After that, it contains pairs of DWORDs, each representing an entry. Each entry records:</p>
+<ul>
+<li>The tool ID (high WORD of the first DWORD) or product ID</li>
+<li>The build ID (low WORD of the first DWORD)</li>
+<li>The use count (second DWORD of the pair)</li>
+</ul>
+<p>PE-bear parse the Rich Header automatically, so you can inspect it without manual decoding.<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PE/Rich.png"
+                      title="Rich Header in PE-bear"
+                > </p>
+<h2 id="NT-Headers"><a href="#NT-Headers" class="headerlink" title="NT Headers"></a>NT Headers</h2><p>The NT Headers are defined in <code>winnt.h</code> as the <code>IMAGE_NT_HEADERS</code> structure. Looking at its definition, we can see that it consists of three main members:</p>
+<ol>
+<li>DWORD Signature – Identifies the file as a PE file.</li>
+<li><code>IMAGE_FILE_HEADER</code> FileHeader – Contains general information about the PE file, such as the target architecture and the number of sections.</li>
+<li><code>IMAGE_OPTIONAL_HEADER</code> OptionalHeader – Provides essential information for the OS loader, including the entry point, memory layout, and required libraries.</li>
+</ol>
+<p>It’s worth noting that there are two versions of this structure:</p>
+<ul>
+<li><code>IMAGE_NT_HEADERS</code> for 32-bit executables (PE32)</li>
+<li><code>IMAGE_NT_HEADERS64</code> for 64-bit executables (PE32+)</li>
+</ul>
+<p>The main difference between the two is the version of the Optional Header they use:</p>
+<ul>
+<li><code>IMAGE_OPTIONAL_HEADER32</code> for 32-bit executables</li>
+<li><code>IMAGE_OPTIONAL_HEADER64</code> for 64-bit executables</li>
+</ul>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_NT_HEADERS64</span> &#123;</span></span><br><span class="line">    DWORD Signature;</span><br><span class="line">    IMAGE_FILE_HEADER FileHeader;</span><br><span class="line">    IMAGE_OPTIONAL_HEADER64 OptionalHeader;</span><br><span class="line">&#125; IMAGE_NT_HEADERS64, *PIMAGE_NT_HEADERS64;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_NT_HEADERS</span> &#123;</span></span><br><span class="line">    DWORD Signature;</span><br><span class="line">    IMAGE_FILE_HEADER FileHeader;</span><br><span class="line">    IMAGE_OPTIONAL_HEADER32 OptionalHeader;</span><br><span class="line">&#125; IMAGE_NT_HEADERS32, *PIMAGE_NT_HEADERS32;</span><br></pre></td></tr></table></figure></div>
+
+<p>This distinction ensures that the PE loader can handle both 32-bit and 64-bit executables correctly.</p>
+<p><strong>Signature</strong><br>The first part of the NT Headers is the PE signature. This is a 4-byte (DWORD) value that identifies the file as a Portable Executable. Its fixed value is <code>0x50450000</code>, which corresponds to <code>PE\0\0</code> in ASCII. This signature acts like a marker, letting the Windows loader know where the PE-specific structures begin.</p>
+<p>Here’s how it looks in PE-bear on our sample file:<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PE/signature.png"
+                      title="Signature in PE-bear"
+                > </p>
+<p><strong>File Header</strong><br>The File Header is a simple structure that stores basic information about the PE file. It’s defined in <code>winnt.h</code> as <code>IMAGE_FILE_HEADER</code>:</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_FILE_HEADER</span> &#123;</span></span><br><span class="line">    WORD    Machine;</span><br><span class="line">    WORD    NumberOfSections;</span><br><span class="line">    DWORD   TimeDateStamp;</span><br><span class="line">    DWORD   PointerToSymbolTable;</span><br><span class="line">    DWORD   NumberOfSymbols;</span><br><span class="line">    WORD    SizeOfOptionalHeader;</span><br><span class="line">    WORD    Characteristics;</span><br><span class="line">&#125; IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;</span><br></pre></td></tr></table></figure></div>
+
+<p>This structure contains 7 members, each with a specific role:</p>
+<ul>
+<li>Machine: Indicates the CPU architecture that the executable targets. Common values are <code>0x8664</code> for AMD64 and <code>0x14c</code> for i386.</li>
+<li>NumberOfSections: The total number of sections in the PE file (or the size of the Section Table).</li>
+<li>TimeDateStamp: A timestamp showing when the file was created, stored as a Unix time value.</li>
+<li>PointerToSymbolTable and NumberOfSymbols: These fields point to the COFF symbol table and indicate the number of entries, but they are usually set to 0 because COFF debugging information is deprecated.</li>
+<li>SizeOfOptionalHeader: The size of the Optional Header following this File Header.</li>
+<li>Characteristics: Flags that describe the file’s attributes, such as whether it’s executable, a system file, or a library.</li>
+</ul>
+<p>Here’s an example of the File Header contents from a real PE file:<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PE/FileHeader.png"
+                      title="File Header in PE-bear"
+                > </p>
+<p><strong>Optional Header</strong><br>The Optional Header is the most critical part of the NT Headers. The Windows PE loader relies on this header to find the information it needs to load and execute the program correctly. it’s mandatory for executable image files. Its size is not fixed, which is why the <code>SizeOfOptionalHeader</code> member in the File Header exists.</p>
+<p><strong>Structure Overview</strong><br>The first few members of the Optional Header are standard across all COFF implementations, while the remaining members are Windows-specific extensions. These extra fields are required by the Windows loader and linker to properly handle executables.</p>
+<p>There are two versions of the Optional Header:</p>
+<ul>
+<li><code>IMAGE_OPTIONAL_HEADER32</code> – used for 32-bit executables</li>
+<li><code>IMAGE_OPTIONAL_HEADER64</code> – used for 64-bit executables</li>
+</ul>
+<p>The differences between the two are mainly:</p>
+<ol>
+<li>Number of members – PE32 has 31 members, while PE32+ has 30. PE32 includes a <code>BaseOfData</code> field, which marks the start of the data section in memory.</li>
+<li>Data types for certain fields – In PE32+, five members that are <code>DWORD</code> in 32-bit are <code>ULONGLONG</code> in 64-bit:<ul>
+<li><code>ImageBase</code></li>
+<li><code>SizeOfStackReserve</code></li>
+<li><code>SizeOfStackCommit</code></li>
+<li><code>SizeOfHeapReserve</code></li>
+<li><code>SizeOfHeapCommit</code></li>
+</ul>
+</li>
+</ol>
+<p>The definition of both structures:</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_OPTIONAL_HEADER</span> &#123;</span></span><br><span class="line">  WORD                 Magic;</span><br><span class="line">  BYTE                 MajorLinkerVersion;</span><br><span class="line">  BYTE                 MinorLinkerVersion;</span><br><span class="line">  DWORD                SizeOfCode;</span><br><span class="line">  DWORD                SizeOfInitializedData;</span><br><span class="line">  DWORD                SizeOfUninitializedData;</span><br><span class="line">  DWORD                AddressOfEntryPoint;</span><br><span class="line">  DWORD                BaseOfCode;</span><br><span class="line">  DWORD                BaseOfData;</span><br><span class="line">  DWORD                ImageBase;</span><br><span class="line">  DWORD                SectionAlignment;</span><br><span class="line">  DWORD                FileAlignment;</span><br><span class="line">  WORD                 MajorOperatingSystemVersion;</span><br><span class="line">  WORD                 MinorOperatingSystemVersion;</span><br><span class="line">  WORD                 MajorImageVersion;</span><br><span class="line">  WORD                 MinorImageVersion;</span><br><span class="line">  WORD                 MajorSubsystemVersion;</span><br><span class="line">  WORD                 MinorSubsystemVersion;</span><br><span class="line">  DWORD                Win32VersionValue;</span><br><span class="line">  DWORD                SizeOfImage;</span><br><span class="line">  DWORD                SizeOfHeaders;</span><br><span class="line">  DWORD                CheckSum;</span><br><span class="line">  WORD                 Subsystem;</span><br><span class="line">  WORD                 DllCharacteristics;</span><br><span class="line">  DWORD                SizeOfStackReserve;</span><br><span class="line">  DWORD                SizeOfStackCommit;</span><br><span class="line">  DWORD                SizeOfHeapReserve;</span><br><span class="line">  DWORD                SizeOfHeapCommit;</span><br><span class="line">  DWORD                LoaderFlags;</span><br><span class="line">  DWORD                NumberOfRvaAndSizes;</span><br><span class="line">  IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];</span><br><span class="line">&#125; IMAGE_OPTIONAL_HEADER32, *PIMAGE_OPTIONAL_HEADER32;</span><br></pre></td></tr></table></figure></div>
+
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_OPTIONAL_HEADER64</span> &#123;</span></span><br><span class="line">  WORD                 Magic;</span><br><span class="line">  BYTE                 MajorLinkerVersion;</span><br><span class="line">  BYTE                 MinorLinkerVersion;</span><br><span class="line">  DWORD                SizeOfCode;</span><br><span class="line">  DWORD                SizeOfInitializedData;</span><br><span class="line">  DWORD                SizeOfUninitializedData;</span><br><span class="line">  DWORD                AddressOfEntryPoint;</span><br><span class="line">  DWORD                BaseOfCode;</span><br><span class="line">  ULONGLONG            ImageBase;</span><br><span class="line">  DWORD                SectionAlignment;</span><br><span class="line">  DWORD                FileAlignment;</span><br><span class="line">  WORD                 MajorOperatingSystemVersion;</span><br><span class="line">  WORD                 MinorOperatingSystemVersion;</span><br><span class="line">  WORD                 MajorImageVersion;</span><br><span class="line">  WORD                 MinorImageVersion;</span><br><span class="line">  WORD                 MajorSubsystemVersion;</span><br><span class="line">  WORD                 MinorSubsystemVersion;</span><br><span class="line">  DWORD                Win32VersionValue;</span><br><span class="line">  DWORD                SizeOfImage;</span><br><span class="line">  DWORD                SizeOfHeaders;</span><br><span class="line">  DWORD                CheckSum;</span><br><span class="line">  WORD                 Subsystem;</span><br><span class="line">  WORD                 DllCharacteristics;</span><br><span class="line">  ULONGLONG            SizeOfStackReserve;</span><br><span class="line">  ULONGLONG            SizeOfStackCommit;</span><br><span class="line">  ULONGLONG            SizeOfHeapReserve;</span><br><span class="line">  ULONGLONG            SizeOfHeapCommit;</span><br><span class="line">  DWORD                LoaderFlags;</span><br><span class="line">  DWORD                NumberOfRvaAndSizes;</span><br><span class="line">  IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];</span><br><span class="line">&#125; IMAGE_OPTIONAL_HEADER64, *PIMAGE_OPTIONAL_HEADER64;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>Structure members:</strong></p>
+<ul>
+<li>Magic – Identifies the file type:<ul>
+<li>0x10B → PE32 (32-bit)</li>
+<li>0x20B → PE32+ (64-bit)</li>
+<li>0x107 → ROM image<br>This field determines whether the executable is 32-bit or 64-bit. The Machine field in the File Header is ignored by the loader.</li>
+</ul>
+</li>
+<li>MajorLinkerVersion &#x2F; MinorLinkerVersion – Linker version numbers.</li>
+<li>SizeOfCode &#x2F; SizeOfInitializedData &#x2F; SizeOfUninitializedData – Sizes of the code, initialized data, and uninitialized data sections.</li>
+<li>AddressOfEntryPoint – The relative virtual address (RVA) where execution begins. For DLLs, this may be zero.</li>
+<li>BaseOfCode &#x2F; BaseOfData (PE32 only) – RVAs of the code and data sections.</li>
+<li>ImageBase – Preferred memory address for the image. Modern systems often relocate the image due to ASLR or other memory constraints.</li>
+<li>SectionAlignment &#x2F; FileAlignment – Control how sections are aligned in memory and on disk.</li>
+<li>Version fields – <code>MajorOperatingSystemVersion</code>, <code>MinorOperatingSystemVersion</code>, <code>MajorImageVersion</code>, <code>MinorImageVersion</code>, <code>MajorSubsystemVersion</code>, <code>MinorSubsystemVersion</code> specify OS, image, and subsystem versions.</li>
+<li>SizeOfImage &#x2F; SizeOfHeaders – Total image size and total size of headers, rounded up to alignments.</li>
+<li>Subsystem – Specifies the required Windows subsystem for this executable.</li>
+<li>DllCharacteristics – Flags defining runtime characteristics, such as NX support or relocatability.</li>
+<li>Stack and Heap sizes – <code>SizeOfStackReserve</code>, <code>SizeOfStackCommit</code>, <code>SizeOfHeapReserve</code>, <code>SizeOfHeapCommit</code> define memory allocation for the stack and heap.</li>
+<li>LoaderFlags &#x2F; Win32VersionValue – Reserved fields, usually set to zero.</li>
+<li>NumberOfRvaAndSizes – The number of entries in the DataDirectory array, which holds important tables like imports, exports, and relocations.</li>
+<li>DataDirectory: An array of <code>IMAGE_DATA_DIRECTORY</code> structures.</li>
+</ul>
+<p>Now, let’s examine the Optional Header as it appears in a real PE file.<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PE/optional.png"
+                      title="Optional Header in PE-bear"
+                > </p>
+<h3 id="Data-Directories"><a href="#Data-Directories" class="headerlink" title="Data Directories"></a>Data Directories</h3><p>The last member of the Optional Header is the Data Directories, and it’s worth taking a closer look.</p>
+<p>What Are Data Directories?<br>In the <code>IMAGE_OPTIONAL_HEADER</code> structure, the Data Directories are represented as an array of <code>IMAGE_DATA_DIRECTORY</code> structures:</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_NUMBEROF_DIRECTORY_ENTRIES 16</span></span><br></pre></td></tr></table></figure></div>
+
+<p>Each <code>IMAGE_DATA_DIRECTORY</code> has just two members:</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DATA_DIRECTORY</span> &#123;</span></span><br><span class="line">    DWORD VirtualAddress;  <span class="comment">// RVA to the start of the data</span></span><br><span class="line">    DWORD Size;            <span class="comment">// Size of the data</span></span><br><span class="line">&#125; IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;</span><br></pre></td></tr></table></figure></div>
+
+<p>In simple terms, a Data Directory points to a specific type of data stored somewhere in the PE file sections. The VirtualAddress is an RVA pointing to that data, and the Size tells you how big it is.</p>
+<p>Data Directories are used by the Windows loader to locate important information. For example, the Import Directory contains a list of functions imported from other libraries, which the loader needs to resolve before executing the program.</p>
+<p><strong>Standard Data Directory Entries</strong><br>The PE format defines 16 possible Data Directories, each identified by an index in the array:</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_EXPORT          0   <span class="comment">// Export Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_IMPORT          1   <span class="comment">// Import Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_RESOURCE        2   <span class="comment">// Resource Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_EXCEPTION       3   <span class="comment">// Exception Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_SECURITY        4   <span class="comment">// Security Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_BASERELOC       5   <span class="comment">// Base Relocation Table</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_DEBUG           6   <span class="comment">// Debug Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_ARCHITECTURE    7   <span class="comment">// Architecture Specific Data</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_GLOBALPTR       8   <span class="comment">// RVA of GP</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_TLS             9   <span class="comment">// TLS Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG    10   <span class="comment">// Load Configuration Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT   11   <span class="comment">// Bound Import Directory</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_IAT            12   <span class="comment">// Import Address Table</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT   13   <span class="comment">// Delay Load Import Descriptors</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR 14   <span class="comment">// COM Runtime Descriptor</span></span></span><br></pre></td></tr></table></figure></div>
+
+<p>When examining the DataDirectory array in an actual PE file, you may see entries where both VirtualAddress and Size are zero.<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PE/DataDirectory.png"
+                      title="Data Directory in PE-bear"
+                > </p>
+<p>This simply means that this particular directory is not present in the executable.</p>
+<h2 id="Section-Headers"><a href="#Section-Headers" class="headerlink" title="Section Headers"></a>Section Headers</h2><p>After the Optional Header and before the sections comes the Section Headers. Each section is preceded by a Section Header, which describes its properties. The structure is defined as:</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_SECTION_HEADER</span> &#123;</span></span><br><span class="line">    BYTE    Name[IMAGE_SIZEOF_SHORT_NAME];</span><br><span class="line">    <span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">        DWORD PhysicalAddress;</span><br><span class="line">        DWORD VirtualSize;</span><br><span class="line">    &#125; Misc;</span><br><span class="line">    DWORD   VirtualAddress;</span><br><span class="line">    DWORD   SizeOfRawData;</span><br><span class="line">    DWORD   PointerToRawData;</span><br><span class="line">    DWORD   PointerToRelocations;</span><br><span class="line">    DWORD   PointerToLineNumbers;</span><br><span class="line">    WORD    NumberOfRelocations;</span><br><span class="line">    WORD    NumberOfLineNumbers;</span><br><span class="line">    DWORD   Characteristics;</span><br><span class="line">&#125; IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>members:</strong></p>
+<ul>
+<li>Name – Section name (max 8 characters).</li>
+<li>VirtualSize – Total size of the section when loaded in memory.</li>
+<li>VirtualAddress – RVA of the section start relative to the image base.</li>
+<li>SizeOfRawData – Size of the section on disk (rounded to FileAlignment).</li>
+<li>PointerToRawData – File offset to the section’s data.</li>
+<li>Characteristics – Flags describing the section (executable, writable, shared, etc.).</li>
+</ul>
+<p>Here’s a view of section headers in PE-bear, showing each section’s name, size, and characteristics (Our sample contains just two sections).<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/PE/SecHeaders.png"
+                      title="Section Headers in PE-bear"
+                > </p>
+<h1 id="Sections"><a href="#Sections" class="headerlink" title="Sections"></a>Sections</h1><p>After the headers, the rest of the PE file is divided into sections. Sections are containers for the executable’s actual data: code, resources, and other necessary information.</p>
+<p>Some common section names:</p>
+<ul>
+<li>.text – Executable code</li>
+<li>.data – Initialized data</li>
+<li>.bss – Uninitialized data</li>
+<li>.rdata – Read-only initialized data</li>
+<li>.edata – Export tables</li>
+<li>.idata – Import tables</li>
+<li>.reloc – Relocation information</li>
+<li>.rsrc – Resources (images, icons, embedded binaries)</li>
+</ul>
+<h1 id="PE-Imports"><a href="#PE-Imports" class="headerlink" title="PE Imports"></a>PE Imports</h1><p>PE imports are a core mechanism in Windows executable files that list the external DLLs (Dynamic Link Libraries) and specific functions a program needs to run, such as system API calls. They allow the operating system’s loader to map necessary code, such as <code>kernel32.dll</code>, into memory, enabling functionality like file handling or network access.</p>
+<p>Key components of PE imports include:</p>
+<ul>
+<li>Import Directory Table: An array of descriptors, one for each imported DLL, marking the start of the import data.</li>
+<li>Import Lookup Table (ILT&#x2F;INT): A table holding pointers to the names or ordinals (IDs) of the functions to be imported.</li>
+<li>Import Address Table (IAT): A table updated at runtime by the loader, which replaces the function names with the actual memory addresses of those functions, enabling direct calls.</li>
+</ul>
+<h2 id="Import-Directory-Table"><a href="#Import-Directory-Table" class="headerlink" title="Import Directory Table"></a>Import Directory Table</h2><p>The Import Directory Table sits at the start of the .idata section. It is essentially a Data Directory that lists all the DLLs imported by the executable.</p>
+<p>It’s made of an array of <code>IMAGE_IMPORT_DESCRIPTOR</code> structures—one per DLL. The array ends with a zeroed-out entry to mark the end.</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_IMPORT_DESCRIPTOR</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">        DWORD   Characteristics; </span><br><span class="line">        DWORD   OriginalFirstThunk;</span><br><span class="line">    &#125; DUMMYUNIONNAME;</span><br><span class="line">    DWORD   TimeDateStamp;</span><br><span class="line">    DWORD   ForwarderChain;</span><br><span class="line">    DWORD   Name;</span><br><span class="line">    DWORD   FirstThunk;</span><br><span class="line">&#125; IMAGE_IMPORT_DESCRIPTOR;</span><br><span class="line"><span class="keyword">typedef</span> IMAGE_IMPORT_DESCRIPTOR UNALIGNED *PIMAGE_IMPORT_DESCRIPTOR;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>OriginalFirstThunk: RVA pointing to the Import Lookup Table (ILT) for this DLL.</li>
+<li>Name: RVA of an ASCII string containing the DLL name.</li>
+<li>FirstThunk: RVA of the Import Address Table (IAT).</li>
+<li>ForwarderChain: Usually 0 unless the DLL forwards functions to another DLL.</li>
+<li>TimeDateStamp: Typically 0, not used for unbound imports.</li>
+</ul>
+<h2 id="Import-Lookup-Table-ILT-Import-Name-Table-INT"><a href="#Import-Lookup-Table-ILT-Import-Name-Table-INT" class="headerlink" title="Import Lookup Table (ILT) &#x2F; Import Name Table (INT)"></a>Import Lookup Table (ILT) &#x2F; Import Name Table (INT)</h2><p>The ILT tells the loader which functions to import from the DLL. Its RVA is stored in <code>OriginalFirstThunk</code>.</p>
+<ul>
+<li>PE32: 32-bit entries</li>
+<li>PE32+: 64-bit entries</li>
+</ul>
+<p>The ILT ends with a zeroed-out entry.</p>
+<p>ILT entry format:</p>
+<ul>
+<li>MSB (Bit 31&#x2F;63): Ordinal&#x2F;Name flag<ul>
+<li>1 → import by ordinal</li>
+<li>0 → import by name</li>
+</ul>
+</li>
+<li>Other bits:<ul>
+<li>Ordinal mode: stores the 16-bit ordinal of the function</li>
+<li>Name mode: stores the RVA of a Hint&#x2F;Name Table entry</li>
+</ul>
+</li>
+</ul>
+<h2 id="Hint-Name-Table"><a href="#Hint-Name-Table" class="headerlink" title="Hint&#x2F;Name Table"></a>Hint&#x2F;Name Table</h2><p>The Hint&#x2F;Name Table contains the names of functions to import:</p>
+<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_IMPORT_BY_NAME</span> &#123;</span></span><br><span class="line">    WORD    Hint;</span><br><span class="line">    CHAR    Name[<span class="number">1</span>];</span><br><span class="line">&#125; IMAGE_IMPORT_BY_NAME, *PIMAGE_IMPORT_BY_NAME;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>Hint: A number used as a quick index into the DLL’s export table.</li>
+<li>Name: Null-terminated string with the function name.</li>
+</ul>
+<p>When the loader processes the ILT, it uses the Hint and Name to resolve the function’s actual address in the DLL.</p>
+<h2 id="Import-Address-Table-IAT"><a href="#Import-Address-Table-IAT" class="headerlink" title="Import Address Table (IAT)"></a>Import Address Table (IAT)</h2><p>The IAT is where the executable ultimately calls imported functions.<br>On disk, the IAT is identical to the ILT.<br>When the binary is loaded, the loader overwrites each entry with the real address of the imported function in memory.</p>
+
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> Inside the PE File Format: A Deep Dive</li>
+        <li><strong>Author:</strong> Mustafa Al-Zaareer</li>
+        <li><strong>Created at
+                :</strong> 2026-04-02 17:35:31</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2026-04-02 22:18:03
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://mustafaalzaareer.github.io/2026/04/02/Inside-the-PE-File-Format-A-Deep-Dive/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2026/02/12/CyberDefenders-OpenCTI-101-APT29-Lab/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">CyberDefenders:OpenCTI 101 - APT29 Lab</span>
+						<span class="post-nav-item">Next posts</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">On this page</div>
+		<div class="page-title">Inside the PE File Format: A Deep Dive</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Overview-of-PE-file-structure"><span class="nav-text">Overview of PE file structure</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PE-Structure-Overview"><span class="nav-text">PE Structure Overview</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Headers"><span class="nav-text">Headers</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#DOS-Header"><span class="nav-text">DOS Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DOS-Stub"><span class="nav-text">DOS Stub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Rich-Header"><span class="nav-text">Rich Header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NT-Headers"><span class="nav-text">NT Headers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-Directories"><span class="nav-text">Data Directories</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Section-Headers"><span class="nav-text">Section Headers</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sections"><span class="nav-text">Sections</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PE-Imports"><span class="nav-text">PE Imports</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Import-Directory-Table"><span class="nav-text">Import Directory Table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Import-Lookup-Table-ILT-Import-Name-Table-INT"><span class="nav-text">Import Lookup Table (ILT) &#x2F; Import Name Table (INT)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hint-Name-Table"><span class="nav-text">Hint&#x2F;Name Table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Import-Address-Table-IAT"><span class="nav-text">Import Address Table (IAT)</span></a></li></ol></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">Mustafa Al-Zaareer</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        4 posts in total
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">VISITOR COUNT</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">TOTAL PAGE VIEWS</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.5</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container">
+	<img src="">
+</div>
+
+	
+	<div class="search-pop-overlay">
+	<div class="popup search-popup">
+		<div class="search-header">
+			<span class="search-input-field-pre">
+				<i class="fa-solid fa-keyboard"></i>
+			</span>
+			<div class="search-input-container">
+				<input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Search..." spellcheck="false" type="search" class="search-input">
+			</div>
+			<span class="popup-btn-close">
+				<i class="fa-solid fa-times"></i>
+			</span>
+		</div>
+		<div id="search-result">
+			<div id="no-result">
+				<i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+	
+<script src="/js/build/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/build/utils.js" type="module"></script>
+
+<script src="/js/build/main.js" type="module"></script>
+
+<script src="/js/build/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/build/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/build/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/build/layouts/categoryList.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/tools/localSearch.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/runtime.js"></script>
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+  
+<script src="/js/build/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/build/libs/anime.min.js"></script>
+
+
+
+
+
+    
+<script src="/js/build/tools/tocToggle.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/layouts/toc.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/plugins/tabs.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+<script src="/js/build/layouts/essays.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+
+	
+</body>
+
+</html>
